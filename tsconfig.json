@@ -1,0 +1,4 @@
+{
+  // Standart Nuxt Yapılandırması
+  "extends": "./.nuxt/tsconfig.json"
+}
