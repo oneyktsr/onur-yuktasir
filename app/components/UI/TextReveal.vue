@@ -18,61 +18,62 @@ const textElement = ref<HTMLElement | null>(null);
 const { $gsap, $SplitText, $ScrollTrigger } = useNuxtApp();
 let splitInstance: any = null;
 
-// Global Yüklenme Durumunu Dinle
 const isLoaded = useState("isLoaded");
 
-// Animasyon Fonksiyonu (Sadece zamanı gelince çalışacak)
 const runAnimation = () => {
-  if (!textElement.value || !$SplitText) return;
+  if (!textElement.value) return;
 
-  // Görünürlüğü aç
+  // DÜZELTME 2: Görünmezliği EN BAŞTA kaldır.
+  // Böylece aşağıdaki kodlarda hata olsa bile metin görünür.
   textElement.value.classList.remove("invisible");
 
-  // SplitText Kurulumu
-  splitInstance = new $SplitText(textElement.value, {
-    type: "lines, words",
-    linesClass: "line-wrapper overflow-hidden",
-    wordsClass: "word-content will-change-transform",
-    autoSplit: true,
-    mask: "lines",
+  // DÜZELTME 3: SplitText yoksa işlemi burada bitir (Metin zaten görünür oldu)
+  if (!$SplitText) {
+    console.warn("SplitText yüklenemedi, animasyon atlandı.");
+    return;
+  }
 
-    onSplit: (self: any) => {
-      return $gsap.from(self.words, {
-        duration: props.duration,
-        yPercent: 100,
-        autoAlpha: 0,
-        stagger: props.stagger,
-        ease: "power4.out",
-        delay: props.delay,
-        scrollTrigger: {
-          trigger: textElement.value,
-          start: "top 90%",
-          toggleActions: "play none none none",
-        },
-      });
-    },
-  });
+  try {
+    splitInstance = new $SplitText(textElement.value, {
+      type: "lines, words",
+      linesClass: "line-wrapper overflow-hidden",
+      wordsClass: "word-content will-change-transform",
+      autoSplit: true,
+      mask: "lines",
+      onSplit: (self: any) => {
+        return $gsap.from(self.words, {
+          duration: props.duration,
+          yPercent: 100,
+          autoAlpha: 0,
+          stagger: props.stagger,
+          ease: "power4.out",
+          delay: props.delay,
+          scrollTrigger: {
+            trigger: textElement.value,
+            start: "top 90%",
+            toggleActions: "play none none none",
+          },
+        });
+      },
+    });
 
-  // DOM yerleşimi değiştiği için ScrollTrigger'ı tazele
-  $ScrollTrigger.refresh();
+    if ($ScrollTrigger) $ScrollTrigger.refresh();
+  } catch (err) {
+    console.error("TextReveal Animation Error:", err);
+    // Hata olsa bile metin görünsün (Garanti)
+    textElement.value.classList.remove("invisible");
+  }
 };
 
 onMounted(() => {
   document.fonts.ready.then(() => {
-    // EĞER: Sayfa zaten yüklüyse (örn: sayfalar arası geçiş) -> Hemen çalıştır
     if (isLoaded.value) {
       runAnimation();
-    }
-    // EĞER: İlk açılışsa ve Preloader varsa -> Bitmesini bekle (Watch)
-    else {
+    } else {
       const unwatch = watch(isLoaded, (newVal) => {
         if (newVal) {
-          // Preloader bittiği an, animasyon başlasın ama preloader perdesi tamamen kalksın diye
-          // ufak bir gecikme (300ms) verebiliriz.
-          setTimeout(() => {
-            runAnimation();
-          }, 300);
-          unwatch(); // Dinlemeyi bırak
+          runAnimation();
+          unwatch();
         }
       });
     }

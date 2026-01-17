@@ -1,34 +1,41 @@
 <template>
   <div
-    v-if="isVisible"
-    class="fixed inset-0 z-50 flex flex-col w-screen h-screen pointer-events-none p-md"
+    v-if="showGrid"
+    class="fixed inset-0 z-[10000] pointer-events-none flex justify-center w-full h-full"
   >
     <div
-      class="relative grid w-full h-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-sm"
+      class="grid w-full h-full grid-cols-4 px-layout md:grid-cols-8 lg:grid-cols-12 gap-x-md"
     >
       <div
         v-for="i in 12"
         :key="i"
-        class="w-full h-full bg-red-500/10 border-x border-red-500/20"
-        :class="{
-          'hidden md:block': i > 4 && i <= 8,
-          'hidden lg:block': i > 8,
-        }"
+        class="relative h-full bg-red-500/10 border-x border-red-500/20"
+        :class="[
+          i > 8
+            ? 'hidden lg:block' /* 9-12 arası: Sadece Desktop'ta göster */
+            : i > 4
+              ? 'hidden md:block' /* 5-8 arası: Tablet ve üzeri göster */
+              : 'block' /* 1-4 arası: Hep göster */,
+        ]"
       >
-        <div class="text-[10px] text-red-500 text-center mt-2 opacity-50">
-          {{ i }}
-        </div>
+        <span
+          class="absolute top-2 left-1 text-[10px] text-red-500 font-mono"
+          >{{ i }}</span
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const isVisible = ref(false);
+import { onMounted, onUnmounted, ref } from "vue";
 
-const toggleGrid = (event: KeyboardEvent) => {
-  if (event.shiftKey && (event.key === "G" || event.key === "g")) {
-    isVisible.value = !isVisible.value;
+const showGrid = ref(false);
+
+const toggleGrid = (e: KeyboardEvent) => {
+  // Shift + G ile aç/kapa
+  if (e.shiftKey && e.key.toLowerCase() === "g") {
+    showGrid.value = !showGrid.value;
   }
 };
 
