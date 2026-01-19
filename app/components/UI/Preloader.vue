@@ -62,7 +62,7 @@ onMounted(() => {
 
   const split = new $SplitText(brandRef.value, { type: "chars" });
 
-  // BAŞLANGIÇ KONUMLARI
+  // BAŞLANGIÇ
   $gsap.set(brandRef.value, {
     opacity: 1,
     y: "45vh",
@@ -80,7 +80,7 @@ onMounted(() => {
     },
   });
 
-  // ANIMASYON AKIŞI
+  // AKIŞ
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -88,19 +88,16 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  // Sayaç masaüstünde varsa görünür, yoksa (mobil) hata vermez.
   if (counterRef.value) {
     tl.to(counterRef.value, { opacity: 1, duration: 0.5 }, "-=0.5");
   }
 
-  // Çizgi Dolar
   tl.to(
     lineRef.value,
     { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
     "progress",
   );
 
-  // Sayaç Sayar (Sadece görünürse)
   if (counterRef.value) {
     tl.to(
       counterRef.value,
@@ -120,7 +117,7 @@ onMounted(() => {
     );
   }
 
-  // Çıkış
+  // ÇIKIŞ
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,
@@ -136,24 +133,27 @@ onMounted(() => {
     );
   }
 
-  // FİNAL: Perde kalkar, Logo yerine oturur
+  // --- BÜYÜK FİNAL (HOP EFEKTİ) ---
+
+  // Perde aniden fırlar (Expo)
   tl.to(
     curtainRef.value,
     {
       yPercent: -100,
-      duration: 1.2,
-      ease: "power4.inOut",
+      duration: 1.5, // Süre biraz uzadı ki eğrinin "bekleme" kısmı hissedilsin
+      ease: "expo.inOut", // KESKİN GEÇİŞ
     },
     "reveal",
   );
 
+  // Logo perdeyle senkronize fırlar
   tl.to(
     brandRef.value,
     {
       y: 0,
       scale: 1,
-      duration: 1.2,
-      ease: "power4.inOut",
+      duration: 1.5, // Perdeyle aynı süre
+      ease: "expo.inOut", // Perdeyle aynı eğri (Kritik)
     },
     "reveal",
   );
