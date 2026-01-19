@@ -1,197 +1,199 @@
 <template>
-  <div
-    class="w-full min-h-screen bg-[#e4e0db] text-custom-dark pt-[20vh] px-layout overflow-hidden"
-  >
-    <section
-      class="relative grid w-full grid-cols-4 md:grid-cols-12 gap-x-md mb-section"
+  <div>
+    <div
+      class="w-full min-h-screen bg-[#e4e0db] text-custom-dark pt-[20vh] px-layout overflow-hidden"
     >
-      <div class="relative z-10 col-span-4 md:col-span-12">
-        <UITextReveal
-          tag="h1"
-          class="text-display font-light leading-[0.85] tracking-tighter -ml-[0.05em]"
-        >
-          Digital <br />
-          Creative <br />
-          <span class="opacity-40 ml-[2em]">Studio</span>
-        </UITextReveal>
-      </div>
-
-      <div
-        class="grid grid-cols-4 col-span-4 pt-8 mt-16 border-t md:col-span-12 md:grid-cols-12 gap-x-md border-custom-dark/10"
+      <section
+        class="relative grid w-full grid-cols-4 md:grid-cols-12 gap-x-md mb-section"
       >
-        <div class="hidden md:block md:col-span-3">
+        <div class="relative z-10 col-span-4 md:col-span-12">
           <UITextReveal
-            tag="span"
-            :delay="0.2"
-            class="block tracking-widest uppercase text-small opacity-40"
+            tag="h1"
+            class="text-display font-light leading-[0.85] tracking-tighter -ml-[0.05em]"
           >
-            (Scroll for more)
+            Digital <br />
+            Creative <br />
+            <span class="opacity-40 ml-[2em]">Studio</span>
           </UITextReveal>
-        </div>
-
-        <div class="col-span-4 md:col-span-6">
-          <UITextReveal
-            tag="p"
-            :delay="0.4"
-            :stagger="0.02"
-            class="leading-tight text-h3 opacity-70"
-          >
-            We craft immersive digital experiences that redefine the boundary
-            between art and technology.
-          </UITextReveal>
-        </div>
-
-        <div class="justify-end hidden md:flex md:col-span-3">
-          <div class="w-px h-24 bg-custom-dark opacity-20"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="w-full mb-section">
-      <div
-        class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-12 gap-x-md border-custom-dark/10"
-      >
-        <div class="col-span-2 md:col-span-6">
-          <UITextReveal
-            tag="h2"
-            class="tracking-widest uppercase opacity-50 text-small"
-            >Selected Works</UITextReveal
-          >
-        </div>
-        <div class="col-span-2 text-right md:col-span-6">
-          <span class="opacity-50 text-small">(01 — 04)</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-4 md:grid-cols-12 gap-x-md gap-y-section">
-        <div class="flex flex-col col-span-4 md:col-span-6 gap-y-section">
-          <div class="block w-full cursor-pointer group" data-speed="1.05">
-            <div
-              class="w-full aspect-[4/5] bg-neutral-400 mb-6 group-hover:opacity-90 transition-opacity relative overflow-hidden"
-            >
-              <div
-                class="absolute inset-0 bg-neutral-800/10 mix-blend-multiply"
-              ></div>
-            </div>
-            <div class="flex flex-col pt-4 border-t border-custom-dark/10">
-              <UITextReveal
-                tag="h3"
-                class="mb-2 font-normal leading-none text-h2"
-                >Aesop Signature</UITextReveal
-              >
-              <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
-                >Art Direction & Design</UITextReveal
-              >
-            </div>
-          </div>
-          <div class="block w-full cursor-pointer group" data-speed="1.0">
-            <div
-              class="w-full mb-6 transition-opacity aspect-video bg-neutral-800 group-hover:opacity-90"
-            ></div>
-            <div class="flex flex-col pt-4 border-t border-custom-dark/10">
-              <UITextReveal
-                tag="h3"
-                class="mb-2 font-normal leading-none text-h2"
-                >Muji Concept</UITextReveal
-              >
-              <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
-                >Web Design</UITextReveal
-              >
-            </div>
-          </div>
         </div>
 
         <div
-          class="flex flex-col col-span-4 md:col-span-6 gap-y-section md:pt-32"
+          class="grid grid-cols-4 col-span-4 pt-8 mt-16 border-t md:col-span-12 md:grid-cols-12 gap-x-md border-custom-dark/10"
         >
-          <div class="block w-full cursor-pointer group" data-speed="0.95">
-            <div
-              class="w-full mb-6 transition-opacity aspect-square bg-neutral-600 group-hover:opacity-90"
-            ></div>
-            <div class="flex flex-col pt-4 border-t border-custom-dark/10">
-              <UITextReveal
-                tag="h3"
-                class="mb-2 font-normal leading-none text-h2"
-                >Braun Archive</UITextReveal
-              >
-              <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
-                >Development</UITextReveal
-              >
-            </div>
+          <div class="hidden md:block md:col-span-3">
+            <UITextReveal
+              tag="span"
+              :delay="0.2"
+              class="block tracking-widest uppercase text-small opacity-40"
+            >
+              (Scroll for more)
+            </UITextReveal>
           </div>
-          <div class="block w-full cursor-pointer group" data-speed="1.1">
-            <div
-              class="w-full aspect-[3/4] bg-neutral-500 mb-6 group-hover:opacity-90 transition-opacity"
-            ></div>
-            <div class="flex flex-col pt-4 border-t border-custom-dark/10">
-              <UITextReveal
-                tag="h3"
-                class="mb-2 font-normal leading-none text-h2"
-                >Dieter Rams</UITextReveal
-              >
-              <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
-                >Interaction</UITextReveal
-              >
-            </div>
+
+          <div class="col-span-4 md:col-span-6">
+            <UITextReveal
+              tag="p"
+              :delay="0.4"
+              :stagger="0.02"
+              class="leading-tight text-h3 opacity-70"
+            >
+              We craft immersive digital experiences that redefine the boundary
+              between art and technology.
+            </UITextReveal>
+          </div>
+
+          <div class="justify-end hidden md:flex md:col-span-3">
+            <div class="w-px h-24 bg-custom-dark opacity-20"></div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section
-      class="grid w-full grid-cols-4 border-t py-section border-custom-dark/10 md:grid-cols-12 gap-x-md"
-    >
-      <div class="col-span-4 text-center md:col-start-2 md:col-span-10">
-        <UITextReveal
-          tag="p"
-          class="text-h1 font-light leading-[1.1] tracking-tight"
-          data-speed="0.95"
+      <section class="w-full mb-section">
+        <div
+          class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-12 gap-x-md border-custom-dark/10"
         >
-          "Good design is as little design as possible."
-        </UITextReveal>
-      </div>
-    </section>
-  </div>
+          <div class="col-span-2 md:col-span-6">
+            <UITextReveal
+              tag="h2"
+              class="tracking-widest uppercase opacity-50 text-small"
+              >Selected Works</UITextReveal
+            >
+          </div>
+          <div class="col-span-2 text-right md:col-span-6">
+            <span class="opacity-50 text-small">(01 — 04)</span>
+          </div>
+        </div>
 
-  <footer
-    class="w-full bg-custom-dark text-[#e4e0db] px-layout py-section overflow-hidden"
-  >
-    <div
-      class="grid grid-cols-4 md:grid-cols-12 gap-x-md h-[50vh] content-between"
-    >
-      <div class="col-span-4 md:col-span-8">
-        <UITextReveal
-          tag="h2"
-          class="text-display tracking-tighter leading-[0.8]"
-          >Let's <br />
-          Talk</UITextReveal
-        >
-      </div>
+        <div class="grid grid-cols-4 md:grid-cols-12 gap-x-md gap-y-section">
+          <div class="flex flex-col col-span-4 md:col-span-6 gap-y-section">
+            <div class="block w-full cursor-pointer group" data-speed="1.05">
+              <div
+                class="w-full aspect-[4/5] bg-neutral-400 mb-6 group-hover:opacity-90 transition-opacity relative overflow-hidden"
+              >
+                <div
+                  class="absolute inset-0 bg-neutral-800/10 mix-blend-multiply"
+                ></div>
+              </div>
+              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+                <UITextReveal
+                  tag="h3"
+                  class="mb-2 font-normal leading-none text-h2"
+                  >Aesop Signature</UITextReveal
+                >
+                <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
+                  >Art Direction & Design</UITextReveal
+                >
+              </div>
+            </div>
+            <div class="block w-full cursor-pointer group" data-speed="1.0">
+              <div
+                class="w-full mb-6 transition-opacity aspect-video bg-neutral-800 group-hover:opacity-90"
+              ></div>
+              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+                <UITextReveal
+                  tag="h3"
+                  class="mb-2 font-normal leading-none text-h2"
+                  >Muji Concept</UITextReveal
+                >
+                <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
+                  >Web Design</UITextReveal
+                >
+              </div>
+            </div>
+          </div>
 
-      <div
-        class="flex items-start justify-start col-span-4 mt-8 md:col-span-4 md:justify-end md:mt-0"
-      >
-        <button
-          class="group border border-[#e4e0db]/20 px-10 py-5 rounded-full hover:bg-[#e4e0db] hover:text-custom-dark transition-all duration-300"
-        >
-          <span
-            class="inline-block text-xs tracking-widest uppercase transition-transform text-body group-hover:translate-x-1"
-            >Get in touch</span
+          <div
+            class="flex flex-col col-span-4 md:col-span-6 gap-y-section md:pt-32"
           >
-        </button>
-      </div>
-
-      <div
-        class="col-span-4 md:col-span-12 flex justify-between items-end opacity-50 text-small uppercase border-t border-[#e4e0db]/20 pt-8 mt-auto"
-      >
-        <div class="flex flex-col gap-1">
-          <span>© 2026 Studio</span>
-          <span>All Rights Reserved</span>
+            <div class="block w-full cursor-pointer group" data-speed="0.95">
+              <div
+                class="w-full mb-6 transition-opacity aspect-square bg-neutral-600 group-hover:opacity-90"
+              ></div>
+              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+                <UITextReveal
+                  tag="h3"
+                  class="mb-2 font-normal leading-none text-h2"
+                  >Braun Archive</UITextReveal
+                >
+                <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
+                  >Development</UITextReveal
+                >
+              </div>
+            </div>
+            <div class="block w-full cursor-pointer group" data-speed="1.1">
+              <div
+                class="w-full aspect-[3/4] bg-neutral-500 mb-6 group-hover:opacity-90 transition-opacity"
+              ></div>
+              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+                <UITextReveal
+                  tag="h3"
+                  class="mb-2 font-normal leading-none text-h2"
+                  >Dieter Rams</UITextReveal
+                >
+                <UITextReveal tag="p" :delay="0.1" class="opacity-50 text-body"
+                  >Interaction</UITextReveal
+                >
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="transition-opacity cursor-pointer hover:opacity-100"
-          >Back to Top</span
-        >
-      </div>
+      </section>
+
+      <section
+        class="grid w-full grid-cols-4 border-t py-section border-custom-dark/10 md:grid-cols-12 gap-x-md"
+      >
+        <div class="col-span-4 text-center md:col-start-2 md:col-span-10">
+          <UITextReveal
+            tag="p"
+            class="text-h1 font-light leading-[1.1] tracking-tight"
+            data-speed="0.95"
+          >
+            "Good design is as little design as possible."
+          </UITextReveal>
+        </div>
+      </section>
     </div>
-  </footer>
+
+    <footer
+      class="w-full bg-custom-dark text-[#e4e0db] px-layout py-section overflow-hidden"
+    >
+      <div
+        class="grid grid-cols-4 md:grid-cols-12 gap-x-md h-[50vh] content-between"
+      >
+        <div class="col-span-4 md:col-span-8">
+          <UITextReveal
+            tag="h2"
+            class="text-display tracking-tighter leading-[0.8]"
+            >Let's <br />
+            Talk</UITextReveal
+          >
+        </div>
+
+        <div
+          class="flex items-start justify-start col-span-4 mt-8 md:col-span-4 md:justify-end md:mt-0"
+        >
+          <button
+            class="group border border-[#e4e0db]/20 px-10 py-5 rounded-full hover:bg-[#e4e0db] hover:text-custom-dark transition-all duration-300"
+          >
+            <span
+              class="inline-block text-xs tracking-widest uppercase transition-transform text-body group-hover:translate-x-1"
+              >Get in touch</span
+            >
+          </button>
+        </div>
+
+        <div
+          class="col-span-4 md:col-span-12 flex justify-between items-end opacity-50 text-small uppercase border-t border-[#e4e0db]/20 pt-8 mt-auto"
+        >
+          <div class="flex flex-col gap-1">
+            <span>© 2026 Studio</span>
+            <span>All Rights Reserved</span>
+          </div>
+          <span class="transition-opacity cursor-pointer hover:opacity-100"
+            >Back to Top</span
+          >
+        </div>
+      </div>
+    </footer>
+  </div>
 </template>

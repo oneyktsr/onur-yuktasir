@@ -21,6 +21,12 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
+  // --- EKLENEN KISIM ---
+  app: {
+    pageTransition: { name: "page", mode: "out-in" },
+  },
+  // --------------------
+
   content: {
     highlight: {
       theme: "github-dark",

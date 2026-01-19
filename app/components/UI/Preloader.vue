@@ -6,8 +6,9 @@
     >
       <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
         <div class="flex items-start col-span-2 md:col-span-2">
-          <NuxtLink
-            to="/"
+          <a
+            href="/"
+            @click.prevent="handleLogoClick"
             class="block"
             :class="
               isLoaded
@@ -22,7 +23,7 @@
             >
               Le Champ™
             </h1>
-          </NuxtLink>
+          </a>
         </div>
       </div>
     </div>
@@ -66,14 +67,41 @@ const lineRef = ref<HTMLElement | null>(null);
 const counterRef = ref<HTMLElement | null>(null);
 
 const { $gsap, $SplitText } = useNuxtApp();
-const isLoaded = useState("isLoaded");
+const route = useRoute();
+const router = useRouter();
 
+// GLOBAL STATE
+const isLoaded = useState("isLoaded");
+const isMenuOpen = useState<boolean>("isMenuOpen");
+const pendingRoute = useState<string | null>("pendingRoute");
+
+// LOGO TIKLAMA MANTIĞI (GARANTİLİ YÖNTEM)
+const handleLogoClick = () => {
+  // 1. Eğer Mobil Menü Açıksa:
+  if (isMenuOpen.value) {
+    // Eğer zaten anasayfada DEĞİLSEK, rotayı kaydet.
+    if (route.path !== "/") {
+      pendingRoute.value = "/";
+    }
+    // Menüyü kapat (Bu işlem Header.vue'daki animasyonu tetikler)
+    // Animasyon bitince pendingRoute varsa oraya gidilir.
+    isMenuOpen.value = false;
+  }
+  // 2. Menü Kapalıysa:
+  else {
+    // Direkt git (Eğer anasayfada değilsek)
+    if (route.path !== "/") {
+      router.push("/");
+    }
+  }
+};
+
+// PRELOADER ANİMASYONLARI (Aynı)
 onMounted(() => {
   if (!$gsap || !$SplitText) return;
 
   const split = new $SplitText(brandRef.value, { type: "chars" });
 
-  // INITIAL STATES
   $gsap.set(brandRef.value, { opacity: 1, y: "45vh", scale: 1.2 });
   $gsap.set(split.chars, { opacity: 0 });
   $gsap.set(counterRef.value, { opacity: 0 });
@@ -81,16 +109,11 @@ onMounted(() => {
 
   const tl = $gsap.timeline({
     onComplete: () => {
-      // Timeline bittiğinde:
-      // 1. isLoaded = true olur.
-      // 2. Logo tıklanabilir hale gelir.
-      // 3. Scroll kilidi açılır (App.vue'daki watch sayesinde).
       isLoaded.value = true;
       if (curtainRef.value) curtainRef.value.style.display = "none";
     },
   });
 
-  // 1. Logo Text
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -98,19 +121,16 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  // 2. Sayaç (Varsa)
   if (counterRef.value) {
     tl.to(counterRef.value, { opacity: 1, duration: 0.5 }, "-=0.5");
   }
 
-  // 3. Line
   tl.to(
     lineRef.value,
     { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
     "progress",
   );
 
-  // 4. Sayaç Sayar (Varsa)
   if (counterRef.value) {
     tl.to(
       counterRef.value,
@@ -130,7 +150,6 @@ onMounted(() => {
     );
   }
 
-  // 5. Çıkış
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,
@@ -146,25 +165,14 @@ onMounted(() => {
     );
   }
 
-  // 6. FİNAL HOP (Expo)
   tl.to(
     curtainRef.value,
-    {
-      yPercent: -100,
-      duration: 1.5,
-      ease: "expo.inOut",
-    },
+    { yPercent: -100, duration: 1.5, ease: "expo.inOut" },
     "reveal",
   );
-
   tl.to(
     brandRef.value,
-    {
-      y: 0,
-      scale: 1,
-      duration: 1.5,
-      ease: "expo.inOut",
-    },
+    { y: 0, scale: 1, duration: 1.5, ease: "expo.inOut" },
     "reveal",
   );
 });

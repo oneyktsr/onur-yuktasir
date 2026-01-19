@@ -62,3 +62,17 @@ video {
   height: auto;
   display: block;
 }
+
+/* --- SAYFA GEÇİŞ EFEKTLERİ (Sadece Fade) --- */
+
+.page-enter-active,
+.page-leave-active {
+  /* Sadece opacity animasyonu */
+  transition: opacity 0.6s ease-in-out;
+}
+
+.page-enter-from,
+.page-leave-to {
+  /* Blur yok, sadece görünmezlik */
+  opacity: 0;
+}

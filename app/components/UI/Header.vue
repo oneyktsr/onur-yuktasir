@@ -6,11 +6,7 @@
       <div
         class="grid items-center w-full grid-cols-4 md:grid-cols-12 gap-x-md"
       >
-        <div
-          class="invisible col-span-2 font-normal leading-none tracking-tight uppercase select-none md:col-span-2 text-h4"
-        >
-          Le Champ™
-        </div>
+        <div class="col-span-2 md:col-span-2"></div>
 
         <div
           class="col-span-2 col-start-3 text-right pointer-events-auto md:col-start-11 md:col-span-2 lg:hidden"
@@ -65,43 +61,51 @@
           ref="mobileNavRef"
           class="flex flex-col items-start overflow-hidden opacity-0 gap-y-6"
         >
-          <NuxtLink
-            to="/studio"
-            @click="toggleMenu"
-            class="font-normal leading-none uppercase transition-opacity js-menu-item text-h3 hover:opacity-50"
-          >
-            Studio
+          <NuxtLink to="/studio" custom v-slot="{ href }">
+            <a
+              :href="href"
+              @click.prevent="handleNav('/studio')"
+              class="block font-normal leading-none uppercase transition-opacity cursor-pointer js-menu-item text-h3 hover:opacity-50"
+              >Studio</a
+            >
           </NuxtLink>
-          <NuxtLink
-            to="/works"
-            @click="toggleMenu"
-            class="font-normal leading-none uppercase transition-opacity js-menu-item text-h3 hover:opacity-50"
-          >
-            Works
+
+          <NuxtLink to="/works" custom v-slot="{ href }">
+            <a
+              :href="href"
+              @click.prevent="handleNav('/works')"
+              class="block font-normal leading-none uppercase transition-opacity cursor-pointer js-menu-item text-h3 hover:opacity-50"
+              >Works</a
+            >
           </NuxtLink>
-          <NuxtLink
-            to="/insights"
-            @click="toggleMenu"
-            class="font-normal leading-none uppercase transition-opacity js-menu-item text-h3 hover:opacity-50"
-          >
-            Insights
+
+          <NuxtLink to="/insights" custom v-slot="{ href }">
+            <a
+              :href="href"
+              @click.prevent="handleNav('/insights')"
+              class="block font-normal leading-none uppercase transition-opacity cursor-pointer js-menu-item text-h3 hover:opacity-50"
+              >Insights</a
+            >
           </NuxtLink>
-          <NuxtLink
-            to="/experience"
-            @click="toggleMenu"
-            class="font-normal leading-none uppercase transition-opacity js-menu-item text-h3 hover:opacity-50"
-          >
-            Experience
+
+          <NuxtLink to="/experience" custom v-slot="{ href }">
+            <a
+              :href="href"
+              @click.prevent="handleNav('/experience')"
+              class="block font-normal leading-none uppercase transition-opacity cursor-pointer js-menu-item text-h3 hover:opacity-50"
+              >Experience</a
+            >
           </NuxtLink>
         </nav>
 
         <div ref="mobileFooterRef" class="mt-auto overflow-hidden opacity-0">
-          <NuxtLink
-            to="/contact"
-            @click="toggleMenu"
-            class="inline-block font-normal leading-none transition-opacity js-menu-item text-h4 hover:opacity-50"
-          >
-            Let's Talk
+          <NuxtLink to="/contact" custom v-slot="{ href }">
+            <a
+              :href="href"
+              @click.prevent="handleNav('/contact')"
+              class="inline-block font-normal leading-none transition-opacity cursor-pointer js-menu-item text-h4 hover:opacity-50"
+              >Let's Talk</a
+            >
           </NuxtLink>
         </div>
       </div>
@@ -113,7 +117,13 @@
 import { ref, watch } from "vue";
 
 const { $gsap, $SplitText } = useNuxtApp();
-const isMenuOpen = ref(false);
+const router = useRouter();
+const route = useRoute();
+
+// GLOBAL STATE (Preloader ile Ortak)
+const isMenuOpen = useState<boolean>("isMenuOpen", () => false);
+const pendingRoute = useState<string | null>("pendingRoute", () => null);
+
 const mobileNavRef = ref(null);
 const mobileFooterRef = ref(null);
 
@@ -121,8 +131,17 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-// --- GSAP ANİMASYONLARI ---
+// Navigasyon Mantığı
+const handleNav = (path: string) => {
+  if (path === route.path) {
+    isMenuOpen.value = false;
+    return;
+  }
+  pendingRoute.value = path;
+  isMenuOpen.value = false;
+};
 
+// GSAP Animasyonları
 const onEnter = (el: Element, done: () => void) => {
   if (!$gsap || !$SplitText) {
     done();
@@ -133,43 +152,26 @@ const onEnter = (el: Element, done: () => void) => {
   const navContainer = mobileNavRef.value;
   const footerContainer = mobileFooterRef.value;
 
-  // 1. Split & Wrap
   const split = new $SplitText(links, {
     type: "lines",
-    linesClass: "overflow-hidden pb-[0.2em]", // Padding arttırıldı (harf kuyrukları için)
+    linesClass: "overflow-hidden pb-[0.2em]",
   });
-
   split.lines.forEach((line: HTMLElement) => {
     const content = line.innerHTML;
     line.innerHTML = `<div class="js-line-content will-change-transform" style="display:block;">${content}</div>`;
   });
 
   const movingLines = el.querySelectorAll(".js-line-content");
-
-  // 2. Başlangıç Konumları
   $gsap.set(el, { yPercent: -100 });
-
-  // DÜZELTME: Mesafe artırıldı (100 -> 120)
-  // Bu sayede metin görünmeden önce hızlanır, maskeye girdiğinde akıcı olur.
   $gsap.set(movingLines, { yPercent: 120 });
 
   const tl = $gsap.timeline({ onComplete: done });
-
-  // 3. Perde İner
-  tl.to(el, {
-    yPercent: 0,
-    duration: 1.0,
-    ease: "expo.inOut",
-  });
-
-  // 4. Kilit Aç
+  tl.to(el, { yPercent: 0, duration: 1.0, ease: "expo.inOut" });
   tl.set([navContainer, footerContainer], { opacity: 1 });
-
-  // 5. Metinler Çıkar
   tl.to(movingLines, {
     yPercent: 0,
-    rotation: 0.001, // DÜZELTME: Sub-pixel rendering (titremeyi önler)
-    duration: 1.1, // Mesafe arttığı için süreyi çok az arttırdık
+    rotation: 0.001,
+    duration: 1.1,
     stagger: 0.06,
     ease: "expo.out",
   });
@@ -180,30 +182,31 @@ const onLeave = (el: Element, done: () => void) => {
     done();
     return;
   }
-
   const movingLines = el.querySelectorAll(".js-line-content");
 
-  const tl = $gsap.timeline({ onComplete: done });
+  const tl = $gsap.timeline({
+    onComplete: () => {
+      done();
+      // GLOBAL NAVİGASYON (Tetikleyici)
+      if (pendingRoute.value) {
+        router.push(pendingRoute.value);
+        pendingRoute.value = null;
+      }
+    },
+  });
 
-  // İçerik Kaybolur
   if (movingLines.length > 0) {
     tl.to(movingLines, {
-      yPercent: -120, // Çıkarken de aynı mesafeye gitsin
+      yPercent: -120,
       rotation: 0.001,
       duration: 0.8,
       stagger: 0.05,
       ease: "power3.in",
     });
   }
-
-  // Perde Kalkar
   tl.to(
     el,
-    {
-      yPercent: -100,
-      duration: 1.0,
-      ease: "expo.inOut",
-    },
+    { yPercent: -100, duration: 1.0, ease: "expo.inOut" },
     movingLines.length > 0 ? "-=0.2" : 0,
   );
 };
@@ -214,7 +217,3 @@ if (process.client) {
   });
 }
 </script>
-
-<style scoped>
-/* Reset */
-</style>
