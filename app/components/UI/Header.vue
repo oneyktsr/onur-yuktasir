@@ -1,6 +1,7 @@
 <template>
   <div>
     <header
+      ref="headerRef"
       class="fixed top-0 left-0 w-full z-[9000] px-layout pt-layout mix-blend-difference text-[#e4e0db] pointer-events-none"
     >
       <div
@@ -114,16 +115,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 
 const { $gsap, $SplitText } = useNuxtApp();
 const router = useRouter();
 const route = useRoute();
 
-// GLOBAL STATE (Preloader ile Ortak)
+// GLOBAL STATE
+const isLoaded = useState("isLoaded");
 const isMenuOpen = useState<boolean>("isMenuOpen", () => false);
 const pendingRoute = useState<string | null>("pendingRoute", () => null);
 
+const headerRef = ref(null);
 const mobileNavRef = ref(null);
 const mobileFooterRef = ref(null);
 
@@ -131,7 +134,6 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-// Navigasyon Mantığı
 const handleNav = (path: string) => {
   if (path === route.path) {
     isMenuOpen.value = false;
@@ -141,7 +143,29 @@ const handleNav = (path: string) => {
   isMenuOpen.value = false;
 };
 
-// GSAP Animasyonları
+// --- HEADER GİRİŞ ANİMASYONU (Sadece Fade-In) ---
+onMounted(() => {
+  if (!$gsap) return;
+
+  // Preloader bitmemişse gizle (Yerinde duruyor, sadece görünmez)
+  if (!isLoaded.value) {
+    $gsap.set(headerRef.value, { autoAlpha: 0 }); // yPercent kaldırıldı
+  }
+});
+
+watch(isLoaded, (val) => {
+  if (val && $gsap && headerRef.value) {
+    // Sadece görünürlüğünü aç
+    $gsap.to(headerRef.value, {
+      autoAlpha: 1,
+      duration: 1.5, // Daha yumuşak bir giriş için süreyi artırdım
+      ease: "power2.out",
+      delay: 0.2,
+    });
+  }
+});
+
+// --- MOBİL MENÜ ANİMASYONLARI (Aynı) ---
 const onEnter = (el: Element, done: () => void) => {
   if (!$gsap || !$SplitText) {
     done();
@@ -187,7 +211,6 @@ const onLeave = (el: Element, done: () => void) => {
   const tl = $gsap.timeline({
     onComplete: () => {
       done();
-      // GLOBAL NAVİGASYON (Tetikleyici)
       if (pendingRoute.value) {
         router.push(pendingRoute.value);
         pendingRoute.value = null;
