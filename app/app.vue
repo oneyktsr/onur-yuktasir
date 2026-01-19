@@ -46,16 +46,15 @@ onMounted(() => {
         normalizeScroll: {
           allowNestedScroll: true,
           debounce: false,
-          type: "touch,wheel", // Sadece touch ve tekerlek
+          // KRİTİK REVİZE: 'touch' kaldırıldı.
+          // Sadece 'wheel' (mouse) için normalize çalışsın.
+          // Mobilde native scroll devreye girsin ki browser barları siteye uyum sağlasın.
+          type: "wheel",
         },
-        ignoreMobileResize: true,
-        // DÜZELTME: 0 yapıldı.
-        // Mobilde JS ile yumuşatma yapmaz, native scroll kullanır.
-        // Bu sayede takılmalar biter, yağ gibi akar.
-        smoothTouch: 0,
+        ignoreMobileResize: false, // Mobil bar değişimini görsün
+        smoothTouch: 0, // Mobilde smooth scroll kapalı (Native Hız)
       });
 
-      // Başlangıçta duraklat
       if (!isLoaded.value) {
         const smoother = ($ScrollSmoother as any).get();
         if (smoother) smoother.paused(true);
@@ -70,8 +69,6 @@ watch(isLoaded, (val) => {
   if (val && $ScrollSmoother) {
     const smoother = ($ScrollSmoother as any).get();
     if (smoother) smoother.paused(false);
-
-    // Refresh ile boyutları güncelle
     setTimeout(() => {
       if ($ScrollTrigger) ($ScrollTrigger as any).refresh();
     }, 100);
