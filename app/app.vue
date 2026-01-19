@@ -43,17 +43,16 @@ onMounted(() => {
         content: "#smooth-content",
         smooth: 1.0,
         effects: true,
-        // DÜZELTME BURADA:
-        // normalizeScroll'u açıyoruz (Scroll garanti çalışsın diye)
-        // AMA 'type' içinden 'pointer'ı siliyoruz.
-        // Böylece mouse ile sürükleme (drag) iptal oluyor.
         normalizeScroll: {
           allowNestedScroll: true,
           debounce: false,
-          type: "touch,wheel", // Sadece touch ve tekerlek. (Pointer YOK)
+          type: "touch,wheel", // Sadece touch ve tekerlek
         },
         ignoreMobileResize: true,
-        smoothTouch: 0.1,
+        // DÜZELTME: 0 yapıldı.
+        // Mobilde JS ile yumuşatma yapmaz, native scroll kullanır.
+        // Bu sayede takılmalar biter, yağ gibi akar.
+        smoothTouch: 0,
       });
 
       // Başlangıçta duraklat
