@@ -115,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue"; // computed eklendi
 
 const { $gsap, $SplitText, $ScrollSmoother } = useNuxtApp();
 const router = useRouter();
@@ -142,6 +142,17 @@ const handleNav = (path: string) => {
   pendingRoute.value = path;
   isMenuOpen.value = false;
 };
+
+// --- DİNAMİK THEME COLOR ---
+// Menü açıkken koyu (#0d0e13), kapalıyken açık (#e4e0db) renk
+useHead({
+  meta: [
+    {
+      name: "theme-color",
+      content: computed(() => (isMenuOpen.value ? "#0d0e13" : "#e4e0db")),
+    },
+  ],
+});
 
 // HEADER GİRİŞ (Fade-In)
 onMounted(() => {
