@@ -3,6 +3,8 @@
     <DevGridDebugger />
     <DevStyleGuide />
 
+    <UIHeader />
+
     <UIPreloader />
 
     <div
@@ -25,9 +27,6 @@ import { watch, nextTick, onMounted, computed } from "vue";
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
 
-// 1. CSS SCROLL KİLİDİ (Native & Mobil)
-// isLoaded FALSE iken (Preloader var): body kilitlenir.
-// isLoaded TRUE olunca (Site açılınca): kilit kalkar.
 useHead({
   bodyAttrs: {
     class: computed(() =>
@@ -36,10 +35,7 @@ useHead({
   },
 });
 
-// 2. GSAP SCROLLSMOOTHER KİLİDİ
 onMounted(() => {
-  // Sayfa ilk açıldığında Smoother'ı DURDUR.
-  // Not: ScrollSmoother instance'ını yakalamak için .get() kullanıyoruz.
   if ($ScrollSmoother) {
     const smoother = ($ScrollSmoother as any).get();
     if (smoother) smoother.paused(true);
@@ -48,13 +44,8 @@ onMounted(() => {
 
 watch(isLoaded, async (newVal) => {
   if (newVal) {
-    // Preloader bittiğinde:
     await nextTick();
-
-    // a) ScrollTrigger'ı yenile (Konumları tekrar hesapla)
     if ($ScrollTrigger) ($ScrollTrigger as any).refresh();
-
-    // b) ScrollSmoother'ı BAŞLAT (Kilidi aç)
     if ($ScrollSmoother) {
       const smoother = ($ScrollSmoother as any).get();
       if (smoother) smoother.paused(false);
