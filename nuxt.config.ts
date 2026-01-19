@@ -21,33 +21,31 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
-  // --- APP KONFİGÜRASYONU ---
+  // --- KRİTİK AYARLAR (Burası Eksikti) ---
   app: {
-    // Sayfa Geçiş Efekti
     pageTransition: { name: "page", mode: "out-in" },
 
-    // Head Ayarları (Mobil Tam Ekran Çözümü)
     head: {
       meta: [
-        // 1. Viewport-fit=cover: Çentik arkasına yayılma ayarı
+        // 1. Sitenin çentik arkasına (en tepeye) uzanmasını sağlayan kod:
         {
           name: "viewport",
           content:
             "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
         },
 
-        // 2. iOS Status Bar Şeffaflığı
+        // 2. iOS Status Bar'ı şeffaflaştıran kod:
         { name: "apple-mobile-web-app-capable", content: "yes" },
         {
           name: "apple-mobile-web-app-status-bar-style",
           content: "black-translucent",
         },
       ],
-      // 3. Body Padding Sıfırlama (Hata Düzeltildi: 'innerHTML' kullanıldı)
+      // 3. Body'nin yukarıdan boşluk bırakmasını engelleyen stil:
       style: [{ innerHTML: "body { padding-top: 0px !important; }" }],
     },
   },
-  // --------------------------
+  // ---------------------------------------
 
   content: {
     highlight: {
