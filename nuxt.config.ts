@@ -43,8 +43,8 @@ export default defineNuxtConfig({
           content: "black-translucent",
         },
       ],
-      // 3. Body Padding Sıfırlama (Garanti Çözüm)
-      style: [{ children: "body { padding-top: 0px !important; }" }],
+      // 3. Body Padding Sıfırlama (Hata Düzeltildi: 'innerHTML' kullanıldı)
+      style: [{ innerHTML: "body { padding-top: 0px !important; }" }],
     },
   },
   // --------------------------
