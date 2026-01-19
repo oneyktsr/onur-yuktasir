@@ -6,12 +6,23 @@
     >
       <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
         <div class="flex items-start col-span-2 md:col-span-2">
-          <h1
-            ref="brandRef"
-            class="font-normal leading-none tracking-tight uppercase origin-left opacity-0 text-h4"
+          <NuxtLink
+            to="/"
+            class="block"
+            :class="
+              isLoaded
+                ? 'pointer-events-auto cursor-pointer'
+                : 'pointer-events-none cursor-default'
+            "
+            aria-label="Back to Home"
           >
-            Le Champ™
-          </h1>
+            <h1
+              ref="brandRef"
+              class="font-normal leading-none tracking-tight uppercase origin-left opacity-0 text-h4"
+            >
+              Le Champ™
+            </h1>
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -62,25 +73,24 @@ onMounted(() => {
 
   const split = new $SplitText(brandRef.value, { type: "chars" });
 
-  // BAŞLANGIÇ
-  $gsap.set(brandRef.value, {
-    opacity: 1,
-    y: "45vh",
-    scale: 1.2,
-  });
-
+  // INITIAL STATES
+  $gsap.set(brandRef.value, { opacity: 1, y: "45vh", scale: 1.2 });
   $gsap.set(split.chars, { opacity: 0 });
   $gsap.set(counterRef.value, { opacity: 0 });
   $gsap.set(lineRef.value, { transformOrigin: "left center" });
 
   const tl = $gsap.timeline({
     onComplete: () => {
+      // Timeline bittiğinde:
+      // 1. isLoaded = true olur.
+      // 2. Logo tıklanabilir hale gelir.
+      // 3. Scroll kilidi açılır (App.vue'daki watch sayesinde).
       isLoaded.value = true;
       if (curtainRef.value) curtainRef.value.style.display = "none";
     },
   });
 
-  // AKIŞ
+  // 1. Logo Text
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -88,16 +98,19 @@ onMounted(() => {
     ease: "power2.out",
   });
 
+  // 2. Sayaç (Varsa)
   if (counterRef.value) {
     tl.to(counterRef.value, { opacity: 1, duration: 0.5 }, "-=0.5");
   }
 
+  // 3. Line
   tl.to(
     lineRef.value,
     { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
     "progress",
   );
 
+  // 4. Sayaç Sayar (Varsa)
   if (counterRef.value) {
     tl.to(
       counterRef.value,
@@ -117,7 +130,7 @@ onMounted(() => {
     );
   }
 
-  // ÇIKIŞ
+  // 5. Çıkış
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,
@@ -133,27 +146,24 @@ onMounted(() => {
     );
   }
 
-  // --- BÜYÜK FİNAL (HOP EFEKTİ) ---
-
-  // Perde aniden fırlar (Expo)
+  // 6. FİNAL HOP (Expo)
   tl.to(
     curtainRef.value,
     {
       yPercent: -100,
-      duration: 1.5, // Süre biraz uzadı ki eğrinin "bekleme" kısmı hissedilsin
-      ease: "expo.inOut", // KESKİN GEÇİŞ
+      duration: 1.5,
+      ease: "expo.inOut",
     },
     "reveal",
   );
 
-  // Logo perdeyle senkronize fırlar
   tl.to(
     brandRef.value,
     {
       y: 0,
       scale: 1,
-      duration: 1.5, // Perdeyle aynı süre
-      ease: "expo.inOut", // Perdeyle aynı eğri (Kritik)
+      duration: 1.5,
+      ease: "expo.inOut",
     },
     "reveal",
   );
