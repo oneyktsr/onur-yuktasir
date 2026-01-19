@@ -26,7 +26,7 @@ import { watch, nextTick, onMounted, computed } from "vue";
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
 
-// Sayfa yüklenene kadar native scroll'u gizle
+// Yüklenene kadar kilit
 useHead({
   bodyAttrs: {
     class: computed(() =>
@@ -43,16 +43,14 @@ onMounted(() => {
         content: "#smooth-content",
         smooth: 1.0,
         effects: true,
+        // DÜZELTME: Scroll'un çalışması için bu yapı şart.
         normalizeScroll: {
           allowNestedScroll: true,
           debounce: false,
-          // KRİTİK REVİZE: 'touch' kaldırıldı.
-          // Sadece 'wheel' (mouse) için normalize çalışsın.
-          // Mobilde native scroll devreye girsin ki browser barları siteye uyum sağlasın.
-          type: "wheel",
+          type: "touch,wheel", // Hem touch hem wheel olaylarını yakala
         },
-        ignoreMobileResize: false, // Mobil bar değişimini görsün
-        smoothTouch: 0, // Mobilde smooth scroll kapalı (Native Hız)
+        ignoreMobileResize: true,
+        smoothTouch: 0, // Mobilde native hız (takılma olmaz)
       });
 
       if (!isLoaded.value) {

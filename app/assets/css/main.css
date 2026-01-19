@@ -22,23 +22,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 3. STRICT LAYOUT RESET (REVİZE EDİLDİ) */
+/* 3. STRICT LAYOUT RESET (Scroll Fix) */
 html,
 body {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0 !important;
-  /* DÜZELTME: 'overflow: hidden !important' KALDIRILDI. */
-  /* Mobilde sayfanın doğal akmasına izin veriyoruz. */
+
+  /* KRİTİK: ScrollSmoother için bu GEREKLİDİR. Yoksa kilitlenir. */
+  overflow: hidden !important;
+
+  /* Sitenin arka plan rengi */
   background-color: #e4e0db;
-
-  /* Mobil tarayıcı barları için dinamik yükseklik */
-  min-height: 100vh;
-  min-height: 100dvh;
-
-  /* Mobilde bounce efektini ve scroll'u güzelleştirir */
-  -webkit-overflow-scrolling: touch;
 }
 
 /* 4. GSAP WRAPPER */
@@ -54,14 +50,12 @@ body {
   padding: 0 !important;
 }
 
-/* Mobilde wrapper'ın fixed olmasını engelleyebiliriz (İsteğe bağlı ama native his için iyidir) */
-/* Ancak effects: true olduğu için fixed kalması gerekebilir. */
-/* overflow: hidden kaldırdığımız için body scroll çalışacaktır. */
-
 #smooth-content {
   width: 100vw !important;
+  /* İçeriğin en az ekran kadar olmasını sağlar */
   min-height: 100vh;
   box-sizing: border-box;
+
   transform: translate3d(0, 0, 0);
   will-change: transform;
   backface-visibility: hidden;

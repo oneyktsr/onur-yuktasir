@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
-  srcDir: "app", // Dosya yolun bu şekilde
+  srcDir: "app",
 
   plugins: ["~/plugins/gsap.client.ts"],
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/seo", "@nuxt/content"],
@@ -27,19 +27,12 @@ export default defineNuxtConfig({
             "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
         },
 
-        // RENK GARANTİSİ (Hem light hem dark modda bej olsun)
+        // --- EDGE TO EDGE ÇÖZÜMÜ ---
+        // Üst barı sitenin rengine (#e4e0db) boyuyoruz.
+        // Bu sayede "kesik" görüntü gidiyor, siteyle birleşiyor.
         { name: "theme-color", content: "#e4e0db" },
-        {
-          name: "theme-color",
-          content: "#e4e0db",
-          media: "(prefers-color-scheme: light)",
-        },
-        {
-          name: "theme-color",
-          content: "#e4e0db",
-          media: "(prefers-color-scheme: dark)",
-        },
 
+        // iOS Web App ayarları
         { name: "apple-mobile-web-app-capable", content: "yes" },
         {
           name: "apple-mobile-web-app-status-bar-style",
