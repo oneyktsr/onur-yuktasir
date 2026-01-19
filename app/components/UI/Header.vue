@@ -117,7 +117,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 
-const { $gsap, $SplitText } = useNuxtApp();
+const { $gsap, $SplitText, $ScrollSmoother } = useNuxtApp();
 const router = useRouter();
 const route = useRoute();
 
@@ -197,9 +197,7 @@ const onEnter = (el: Element, done: () => void) => {
   // 2. Container
   tl.set([navContainer, footerContainer], { opacity: 1 });
 
-  // 3. Metinler Maskeden Çıkar (YAVAŞLATILDI)
-  // duration: 1.1 -> 1.4
-  // stagger: 0.06 -> 0.08
+  // 3. Metinler Maskeden Çıkar
   tl.to(movingLines, {
     yPercent: 0,
     duration: 1.4,
@@ -246,9 +244,19 @@ const onLeave = (el: Element, done: () => void) => {
   );
 };
 
+// --- SCROLL YÖNETİMİ ---
 if (process.client) {
-  watch(isMenuOpen, (val) => {
-    document.body.style.overflow = val ? "hidden" : "";
+  watch(isMenuOpen, (isOpen) => {
+    // 1. Native Scroll'u Kilitle/Aç
+    document.body.style.overflow = isOpen ? "hidden" : "";
+
+    // 2. GSAP Smoother'ı Duraklat/Başlat
+    if ($ScrollSmoother) {
+      const smoother = ($ScrollSmoother as any).get();
+      if (smoother) {
+        smoother.paused(isOpen);
+      }
+    }
   });
 }
 </script>
