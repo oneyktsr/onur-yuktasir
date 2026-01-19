@@ -19,7 +19,7 @@
           >
             <h1
               ref="brandRef"
-              class="font-normal leading-none tracking-tight uppercase origin-left opacity-0 text-h4"
+              class="font-normal leading-none tracking-tight origin-left opacity-0 text-h4"
             >
               Le Champ™
             </h1>

@@ -27,6 +27,8 @@ import { watch, nextTick, onMounted, computed } from "vue";
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
 
+// Lazer için eklenen 'route' ve 'gsap' referansları temizlendi.
+
 useHead({
   bodyAttrs: {
     class: computed(() =>

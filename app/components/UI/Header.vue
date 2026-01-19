@@ -143,29 +143,26 @@ const handleNav = (path: string) => {
   isMenuOpen.value = false;
 };
 
-// --- HEADER GİRİŞ ANİMASYONU (Sadece Fade-In) ---
+// HEADER GİRİŞ (Fade-In)
 onMounted(() => {
   if (!$gsap) return;
-
-  // Preloader bitmemişse gizle (Yerinde duruyor, sadece görünmez)
   if (!isLoaded.value) {
-    $gsap.set(headerRef.value, { autoAlpha: 0 }); // yPercent kaldırıldı
+    $gsap.set(headerRef.value, { autoAlpha: 0 });
   }
 });
 
 watch(isLoaded, (val) => {
   if (val && $gsap && headerRef.value) {
-    // Sadece görünürlüğünü aç
     $gsap.to(headerRef.value, {
       autoAlpha: 1,
-      duration: 1.5, // Daha yumuşak bir giriş için süreyi artırdım
+      duration: 1.5,
       ease: "power2.out",
       delay: 0.2,
     });
   }
 });
 
-// --- MOBİL MENÜ ANİMASYONLARI (Aynı) ---
+// --- MOBİL MENÜ ANİMASYONLARI ---
 const onEnter = (el: Element, done: () => void) => {
   if (!$gsap || !$SplitText) {
     done();
@@ -178,25 +175,35 @@ const onEnter = (el: Element, done: () => void) => {
 
   const split = new $SplitText(links, {
     type: "lines",
-    linesClass: "overflow-hidden pb-[0.2em]",
+    linesClass: "line-wrapper",
   });
+
   split.lines.forEach((line: HTMLElement) => {
     const content = line.innerHTML;
-    line.innerHTML = `<div class="js-line-content will-change-transform" style="display:block;">${content}</div>`;
+    line.innerHTML = `<div class="line-inner will-change-transform" style="display:block;">${content}</div>`;
+    line.style.overflow = "hidden";
   });
 
-  const movingLines = el.querySelectorAll(".js-line-content");
+  const movingLines = el.querySelectorAll(".line-inner");
+
   $gsap.set(el, { yPercent: -100 });
-  $gsap.set(movingLines, { yPercent: 120 });
+  $gsap.set(movingLines, { yPercent: 100 });
 
   const tl = $gsap.timeline({ onComplete: done });
+
+  // 1. Menü Perdesi
   tl.to(el, { yPercent: 0, duration: 1.0, ease: "expo.inOut" });
+
+  // 2. Container
   tl.set([navContainer, footerContainer], { opacity: 1 });
+
+  // 3. Metinler Maskeden Çıkar (YAVAŞLATILDI)
+  // duration: 1.1 -> 1.4
+  // stagger: 0.06 -> 0.08
   tl.to(movingLines, {
     yPercent: 0,
-    rotation: 0.001,
-    duration: 1.1,
-    stagger: 0.06,
+    duration: 1.4,
+    stagger: 0.08,
     ease: "expo.out",
   });
 };
@@ -206,7 +213,8 @@ const onLeave = (el: Element, done: () => void) => {
     done();
     return;
   }
-  const movingLines = el.querySelectorAll(".js-line-content");
+
+  const movingLines = el.querySelectorAll(".line-inner");
 
   const tl = $gsap.timeline({
     onComplete: () => {
@@ -220,16 +228,20 @@ const onLeave = (el: Element, done: () => void) => {
 
   if (movingLines.length > 0) {
     tl.to(movingLines, {
-      yPercent: -120,
-      rotation: 0.001,
+      yPercent: -100,
       duration: 0.8,
       stagger: 0.05,
       ease: "power3.in",
     });
   }
+
   tl.to(
     el,
-    { yPercent: -100, duration: 1.0, ease: "expo.inOut" },
+    {
+      yPercent: -100,
+      duration: 1.0,
+      ease: "expo.inOut",
+    },
     movingLines.length > 0 ? "-=0.2" : 0,
   );
 };
@@ -240,3 +252,14 @@ if (process.client) {
   });
 }
 </script>
+
+<style scoped>
+:deep(.line-wrapper) {
+  overflow: hidden !important;
+  padding-bottom: 0.1em;
+  display: block;
+}
+:deep(.line-inner) {
+  transform-origin: top left;
+}
+</style>
