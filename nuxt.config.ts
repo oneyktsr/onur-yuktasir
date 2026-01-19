@@ -1,3 +1,4 @@
+// nuxt.config.ts
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   future: {
@@ -22,27 +23,28 @@ export default defineNuxtConfig({
 
   // --- APP KONFİGÜRASYONU ---
   app: {
+    // Sayfa Geçiş Efekti
     pageTransition: { name: "page", mode: "out-in" },
 
+    // Head Ayarları (Mobil Tam Ekran Çözümü)
     head: {
       meta: [
-        // 1. Viewport: 'viewport-fit=cover' ile site çentik arkasına kadar yayılır
+        // 1. Viewport-fit=cover: Çentik arkasına yayılma ayarı
         {
           name: "viewport",
           content:
             "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
         },
 
-        // 2. iOS için Üst Barı Şeffaflaştırma (Site arkadan akar)
+        // 2. iOS Status Bar Şeffaflığı
         { name: "apple-mobile-web-app-capable", content: "yes" },
         {
           name: "apple-mobile-web-app-status-bar-style",
           content: "black-translucent",
         },
-
-        // 3. Fallback Tema Rengi (Diğer cihazlar için varsayılan bej rengi)
-        { name: "theme-color", content: "#e4e0db" },
       ],
+      // 3. Body Padding Sıfırlama (Garanti Çözüm)
+      style: [{ children: "body { padding-top: 0px !important; }" }],
     },
   },
   // --------------------------
