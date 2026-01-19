@@ -115,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from "vue"; // computed eklendi
+import { ref, watch, onMounted } from "vue";
 
 const { $gsap, $SplitText, $ScrollSmoother } = useNuxtApp();
 const router = useRouter();
@@ -143,16 +143,7 @@ const handleNav = (path: string) => {
   isMenuOpen.value = false;
 };
 
-// --- DİNAMİK THEME COLOR ---
-// Menü açıkken koyu (#0d0e13), kapalıyken açık (#e4e0db) renk
-useHead({
-  meta: [
-    {
-      name: "theme-color",
-      content: computed(() => (isMenuOpen.value ? "#0d0e13" : "#e4e0db")),
-    },
-  ],
-});
+// --- (DÜZELTME) theme-color useHead bloğu SİLİNDİ ---
 
 // HEADER GİRİŞ (Fade-In)
 onMounted(() => {
@@ -201,14 +192,8 @@ const onEnter = (el: Element, done: () => void) => {
   $gsap.set(movingLines, { yPercent: 100 });
 
   const tl = $gsap.timeline({ onComplete: done });
-
-  // 1. Menü Perdesi
   tl.to(el, { yPercent: 0, duration: 1.0, ease: "expo.inOut" });
-
-  // 2. Container
   tl.set([navContainer, footerContainer], { opacity: 1 });
-
-  // 3. Metinler Maskeden Çıkar
   tl.to(movingLines, {
     yPercent: 0,
     duration: 1.4,
@@ -258,15 +243,10 @@ const onLeave = (el: Element, done: () => void) => {
 // --- SCROLL YÖNETİMİ ---
 if (process.client) {
   watch(isMenuOpen, (isOpen) => {
-    // 1. Native Scroll'u Kilitle/Aç
     document.body.style.overflow = isOpen ? "hidden" : "";
-
-    // 2. GSAP Smoother'ı Duraklat/Başlat
     if ($ScrollSmoother) {
       const smoother = ($ScrollSmoother as any).get();
-      if (smoother) {
-        smoother.paused(isOpen);
-      }
+      if (smoother) smoother.paused(isOpen);
     }
   });
 }
