@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true },
 
+  // Dosyaların 'app' klasöründe olduğu için bunu eklemeliyiz:
+  srcDir: "app",
+
   // Pluginler
   plugins: ["~/plugins/gsap.client.ts"],
 
@@ -14,38 +17,41 @@ export default defineNuxtConfig({
 
   // Site Ayarları
   site: {
-    url: "https://example.com",
-    name: "Site Adı",
+    url: "https://onur-yuktasir.vercel.app",
+    name: "Onur Yuktaşır",
     description: "Portfolio and Insights",
     defaultLocale: "en",
     indexable: true,
   },
 
-  // --- KRİTİK AYARLAR (Burası Eksikti) ---
+  // --- APP KONFİGÜRASYONU ---
   app: {
     pageTransition: { name: "page", mode: "out-in" },
 
     head: {
       meta: [
-        // 1. Sitenin çentik arkasına (en tepeye) uzanmasını sağlayan kod:
+        // 1. Viewport: Siteyi çentik arkasına yayar
         {
           name: "viewport",
           content:
             "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
         },
 
-        // 2. iOS Status Bar'ı şeffaflaştıran kod:
+        // 2. EKSİK OLAN PARÇA: Tema Rengi (Sitenin tepesini bej yapar, kesikliği giderir)
+        { name: "theme-color", content: "#e4e0db" },
+
+        // 3. iOS Web App Modu (Ana ekrana eklenirse şeffaf olur)
         { name: "apple-mobile-web-app-capable", content: "yes" },
         {
           name: "apple-mobile-web-app-status-bar-style",
           content: "black-translucent",
         },
       ],
-      // 3. Body'nin yukarıdan boşluk bırakmasını engelleyen stil:
+      // 4. Body Padding Sıfırlama
       style: [{ innerHTML: "body { padding-top: 0px !important; }" }],
     },
   },
-  // ---------------------------------------
+  // --------------------------
 
   content: {
     highlight: {
@@ -56,5 +62,6 @@ export default defineNuxtConfig({
     },
   } as any,
 
+  // CSS Yolu (srcDir: 'app' eklediğimiz için artık doğru çalışacak)
   css: ["~/assets/css/main.css"],
 });
