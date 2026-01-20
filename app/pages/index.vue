@@ -258,24 +258,24 @@ import { ref, onMounted, onUnmounted } from "vue";
 const { $gsap, $ScrollTrigger } = useNuxtApp();
 
 // Referanslar
-const heroSectionRef = ref(null);
-const heroTitleRef = ref(null);
-const videoContainerRef = ref(null);
-const videoRef = ref(null);
+const heroSectionRef = ref<HTMLElement | null>(null);
+const heroTitleRef = ref<HTMLElement | null>(null);
+const videoContainerRef = ref<HTMLElement | null>(null);
+const videoRef = ref<HTMLElement | null>(null);
 
 let ctx: any;
 
 onMounted(() => {
   if (!$gsap || !$ScrollTrigger) return;
 
+  // Responsive animasyonlar için matchMedia kullanımı
+  let mm = $gsap.matchMedia();
+
   ctx = $gsap.context(() => {
-    // 1. TITLE LAG (DAHA YAVAŞ)
-    // yPercent: 50 -> 80 yapıldı.
-    // Başlık scroll yaparken %80 oranında aşağı itiliyor (direnç gösteriyor).
-    // Bu sayede yukarı çıkışı çok yavaşlıyor.
+    // 1. TITLE LAG (SABİT 200 - İSTEĞİN ÜZERİNE)
     if (heroTitleRef.value && heroSectionRef.value) {
       $gsap.to(heroTitleRef.value, {
-        yPercent: 200, // %80 direnç (Çok yavaş çıkış)
+        yPercent: 200, // ÇOK AĞIR ÇEKİM
         ease: "none",
         scrollTrigger: {
           trigger: heroSectionRef.value,
@@ -286,26 +286,43 @@ onMounted(() => {
       });
     }
 
-    // 2. VIDEO PARALLAX (AYNI KALDI - MAX)
-    if (videoContainerRef.value && videoRef.value) {
-      $gsap.fromTo(
-        videoRef.value,
-        {
-          scale: 1.5,
-          yPercent: -35,
-        },
-        {
-          yPercent: 35,
-          ease: "none",
-          scrollTrigger: {
-            trigger: videoContainerRef.value,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        },
-      );
-    }
+    // 2. VIDEO PARALLAX (RESPONSIVE)
+    // TypeScript hatası burada (context: any) ile çözüldü.
+    mm.add(
+      {
+        isMobile: "(max-width: 768px)",
+        isDesktop: "(min-width: 769px)",
+      },
+      (context: any) => {
+        let { isMobile } = context.conditions;
+
+        // MOBILDE DAHA BELİRGİN:
+        // Scale: 1.7 (Extra zoom)
+        // Movement: ±45 (Extra hareket)
+        const scaleVal = isMobile ? 1.7 : 1.5;
+        const moveVal = isMobile ? 45 : 35;
+
+        if (videoContainerRef.value && videoRef.value) {
+          $gsap.fromTo(
+            videoRef.value,
+            {
+              scale: scaleVal,
+              yPercent: -moveVal,
+            },
+            {
+              yPercent: moveVal,
+              ease: "none",
+              scrollTrigger: {
+                trigger: videoContainerRef.value,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            },
+          );
+        }
+      },
+    );
   });
 });
 
