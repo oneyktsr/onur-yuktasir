@@ -1,42 +1,47 @@
-<script setup lang="ts">
-// Import satırı YOK (Nuxt otomatik halleder)
-
-const {
-  data: works,
-  pending,
-  error,
-} = (await useAsyncData("works-list", () =>
-  // @ts-ignore -> queryContent hatasını susturur
-  queryContent("/works").find(),
-)) as any; // -> Gelen veriyi 'any' yaparak .length hatasını susturur
-</script>
-
 <template>
-  <div>
-    <h1 class="text-h1 mb-layout">Selected Works</h1>
-
-    <div v-if="pending" class="opacity-50 text-body">Loading works...</div>
-    <div v-else-if="error" class="text-red-500 text-body">
-      Error loading projects.
-    </div>
-
-    <div
-      v-else-if="works && works.length > 0"
-      class="grid grid-cols-1 md:grid-cols-2 gap-md"
+  <div class="w-full min-h-screen bg-[#e4e0db] text-custom-dark">
+    <section
+      class="w-full px-layout pt-[calc(theme('spacing.layout')*4)] pb-section"
     >
-      <div v-for="work in works" :key="work._path" class="group">
-        <NuxtLink :to="work._path" class="block">
-          <div
-            class="flex items-center justify-center transition-colors bg-custom-dark/5 aspect-video mb-sm group-hover:bg-custom-dark/10 text-small opacity-30"
-          >
-            Image Placeholder
-          </div>
-          <h2 class="font-normal text-h3">{{ work.title }}</h2>
-          <p class="text-body opacity-60 mt-xs">{{ work.description }}</p>
-        </NuxtLink>
-      </div>
-    </div>
+      <div class="grid grid-cols-4 md:grid-cols-12 gap-x-md">
+        <div class="col-span-4 md:col-span-10">
+          <div class="relative inline-flex items-start">
+            <UITextReveal
+              tag="h1"
+              type="lines"
+              class="text-display font-normal leading-[0.8] tracking-tighter"
+            >
+              Works
+            </UITextReveal>
 
-    <div v-else class="opacity-50 text-body">No projects found.</div>
+            <span
+              class="ml-2 -mt-2 font-light transition-opacity duration-700 delay-500 opacity-50 text-h3 md:text-h2 md:-mt-4"
+              :class="pending ? 'opacity-0' : 'opacity-50'"
+            >
+              ({{ totalCount }})
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
+
+<script setup lang="ts">
+// Eğer 'queryContent' hatası editörde devam ederse terminalde: npx nuxi prepare çalıştır.
+
+const { data: projects, pending } = await useAsyncData("works-list-count", () =>
+  queryContent("works").where({ _extension: "md" }).only(["_path"]).find(),
+);
+
+// DÜZELTME: TypeScript'in 'length' özelliğini görebilmesi için tip kontrolü (Array.isArray) ekledik.
+const totalCount = computed(() => {
+  const list = projects.value;
+  return Array.isArray(list) ? list.length : 0;
+});
+
+useHead({
+  title: "Works — Studio",
+  meta: [{ name: "description", content: "Selected works and case studies." }],
+});
+</script>
