@@ -257,7 +257,6 @@ import { ref, onMounted, onUnmounted } from "vue";
 
 const { $gsap, $ScrollTrigger } = useNuxtApp();
 
-// Referanslar
 const heroSectionRef = ref<HTMLElement | null>(null);
 const heroTitleRef = ref<HTMLElement | null>(null);
 const videoContainerRef = ref<HTMLElement | null>(null);
@@ -268,26 +267,11 @@ let ctx: any;
 onMounted(() => {
   if (!$gsap || !$ScrollTrigger) return;
 
-  // Responsive animasyonlar için matchMedia kullanımı
+  // Responsive: matchMedia
   let mm = $gsap.matchMedia();
 
   ctx = $gsap.context(() => {
-    // 1. TITLE LAG (SABİT 200 - İSTEĞİN ÜZERİNE)
-    if (heroTitleRef.value && heroSectionRef.value) {
-      $gsap.to(heroTitleRef.value, {
-        yPercent: 200, // ÇOK AĞIR ÇEKİM
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroSectionRef.value,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-    }
-
-    // 2. VIDEO PARALLAX (RESPONSIVE)
-    // TypeScript hatası burada (context: any) ile çözüldü.
+    // Hem VIDEO hem TITLE animasyonlarını responsive olarak ayarlıyoruz.
     mm.add(
       {
         isMobile: "(max-width: 768px)",
@@ -296,21 +280,45 @@ onMounted(() => {
       (context: any) => {
         let { isMobile } = context.conditions;
 
-        // MOBILDE DAHA BELİRGİN:
-        // Scale: 1.7 (Extra zoom)
-        // Movement: ±45 (Extra hareket)
-        const scaleVal = isMobile ? 1.7 : 1.5;
-        const moveVal = isMobile ? 45 : 35;
+        // --- AYARLAR ---
 
+        // 1. Title Lag (Gecikme)
+        // Desktop: 200 (Ağır)
+        // Mobil: 300 (Daha da ağır, kullanıcı isteği)
+        const titleLag = isMobile ? 300 : 200;
+
+        // 2. Video Parallax
+        // Desktop: Scale 1.5, Move 35
+        // Mobil: Scale 1.7, Move 45 (Daha agresif)
+        const videoScale = isMobile ? 1.7 : 1.5;
+        const videoMove = isMobile ? 45 : 35;
+
+        // --- UYGULAMA ---
+
+        // A) Title Animation
+        if (heroTitleRef.value && heroSectionRef.value) {
+          $gsap.to(heroTitleRef.value, {
+            yPercent: titleLag, // Cihaza göre değişen değer
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroSectionRef.value,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        }
+
+        // B) Video Animation
         if (videoContainerRef.value && videoRef.value) {
           $gsap.fromTo(
             videoRef.value,
             {
-              scale: scaleVal,
-              yPercent: -moveVal,
+              scale: videoScale,
+              yPercent: -videoMove,
             },
             {
-              yPercent: moveVal,
+              yPercent: videoMove,
               ease: "none",
               scrollTrigger: {
                 trigger: videoContainerRef.value,
