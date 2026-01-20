@@ -1,47 +1,86 @@
 <template>
-  <div class="w-full min-h-screen bg-[#e4e0db] text-custom-dark">
-    <section
-      class="w-full px-layout pt-[calc(theme('spacing.layout')*4)] pb-section"
-    >
-      <div class="grid grid-cols-4 md:grid-cols-12 gap-x-md">
-        <div class="col-span-4 md:col-span-10">
-          <div class="relative inline-flex items-start">
-            <UITextReveal
-              tag="h1"
-              type="lines"
-              class="text-display font-normal leading-[0.8] tracking-tighter"
-            >
-              Works
-            </UITextReveal>
-
-            <span
-              class="ml-2 -mt-2 font-light transition-opacity duration-700 delay-500 opacity-50 text-h3 md:text-h2 md:-mt-4"
-              :class="pending ? 'opacity-0' : 'opacity-50'"
-            >
-              ({{ totalCount }})
-            </span>
-          </div>
-        </div>
+  <div class="w-full h-screen bg-[#0d0e13] text-[#e4e0db] overflow-hidden">
+    <ClientOnly>
+      <div v-if="displayProjects.length > 0" class="w-full h-full">
+        <WorksImmersiveGallery :items="displayProjects as any" />
       </div>
-    </section>
+
+      <div
+        v-else
+        class="w-full h-full flex items-center justify-center bg-[#0d0e13]"
+      >
+        <span class="text-[#e4e0db] opacity-50 animate-pulse font-light"
+          >Loading Gallery...</span
+        >
+      </div>
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
-// Eğer 'queryContent' hatası editörde devam ederse terminalde: npx nuxi prepare çalıştır.
-
-const { data: projects, pending } = await useAsyncData("works-list-count", () =>
-  queryContent("works").where({ _extension: "md" }).only(["_path"]).find(),
+// 1. Gerçek veriyi çek
+const { data: realProjects, pending } = await useAsyncData(
+  "works-list-immersive",
+  () =>
+    queryContent("works")
+      .where({ _extension: "md", status: "published" })
+      .sort({ id: -1 })
+      .find(),
 );
 
-// DÜZELTME: TypeScript'in 'length' özelliğini görebilmesi için tip kontrolü (Array.isArray) ekledik.
-const totalCount = computed(() => {
-  const list = projects.value;
-  return Array.isArray(list) ? list.length : 0;
+// 2. Fallback (Yedek) Projeler
+const fallbackProjects = [
+  {
+    title: "Concept Alpha",
+    slug: "concept-alpha",
+    cover: { image: "https://picsum.photos/800/800?random=1" },
+  },
+  {
+    title: "Mono Brand",
+    slug: "mono-brand",
+    cover: { image: "https://picsum.photos/800/800?random=2" },
+  },
+  {
+    title: "Studio X",
+    slug: "studio-x",
+    cover: { image: "https://picsum.photos/800/800?random=3" },
+  },
+  {
+    title: "Urban Future",
+    slug: "urban-future",
+    cover: { image: "https://picsum.photos/800/800?random=4" },
+  },
+  {
+    title: "Neon Lights",
+    slug: "neon-lights",
+    cover: { image: "https://picsum.photos/800/800?random=5" },
+  },
+];
+
+// 3. Görüntülenecek Veriyi Seç
+const displayProjects = computed(() => {
+  if (
+    realProjects.value &&
+    Array.isArray(realProjects.value) &&
+    realProjects.value.length > 0
+  ) {
+    return realProjects.value;
+  }
+  if (!pending.value) {
+    return fallbackProjects;
+  }
+  return [];
 });
 
 useHead({
   title: "Works — Studio",
-  meta: [{ name: "description", content: "Selected works and case studies." }],
+  meta: [
+    // Tema rengini güncelledik: #0d0e13
+    { name: "theme-color", content: "#0d0e13" },
+    {
+      name: "apple-mobile-web-app-status-bar-style",
+      content: "black-translucent",
+    },
+  ],
 });
 </script>
