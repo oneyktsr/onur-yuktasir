@@ -20,23 +20,27 @@
         </div>
 
         <div class="grid items-end w-full grid-cols-4 md:grid-cols-12 gap-x-md">
-          <div class="flex justify-start col-span-4 mb-6 md:col-span-4 md:mb-0">
+          <div
+            class="flex justify-start order-2 col-span-4 md:col-span-4 md:mb-0 md:order-1"
+          >
             <NuxtLink
               to="/studio"
-              class="inline-flex items-center tracking-widest uppercase transition-opacity group text-small hover:opacity-50"
+              class="inline-flex items-center font-normal transition-opacity group text-body hover:opacity-50"
             >
               <span>Learn More About Us</span>
             </NuxtLink>
           </div>
 
-          <div class="col-span-4 text-left md:col-span-5 md:col-start-8">
+          <div
+            class="order-1 col-span-4 mb-6 text-left md:col-span-5 md:col-start-8 md:mb-0 md:order-2"
+          >
             <UITextReveal
               tag="p"
               :delay="0.2"
               type="lines"
               class="text-h4 font-light leading-[1.1]"
             >
-              We craft digital experiences that inspire engagement and deliver
+              We create digital experiences that inspire engagement and deliver
               measurable impact for forward-thinking brands and businesses.
             </UITextReveal>
           </div>
