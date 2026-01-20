@@ -194,33 +194,37 @@ const animate = () => {
   }
 };
 
-// --- INPUT HANDLING (GÜNCELLENDİ) ---
+// --- INPUT HANDLING (GÜVENLİ VE HATASIZ) ---
 
 // 1. TOUCH START
 const onTouchStart = (e: TouchEvent) => {
-  // Tarayıcıya "Dur, bu olay benim" diyoruz.
   if (e.cancelable) e.preventDefault();
 
-  state.isDragging = true;
+  // DÜZELTME: Parmak var mı kontrolü
   const touch = e.touches[0];
+  if (!touch) return;
+
+  state.isDragging = true;
   state.lastMouse.set(touch.clientX, touch.clientY);
 };
 
 // 2. TOUCH MOVE
 const onTouchMove = (e: TouchEvent) => {
-  // Scroll yapılmasını kesinlikle engelle
   if (e.cancelable) e.preventDefault();
 
   if (!state.isDragging) return;
 
+  // DÜZELTME: Parmak var mı kontrolü
   const touch = e.touches[0];
+  if (!touch) return;
+
   const x = touch.clientX;
   const y = touch.clientY;
 
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
 
-  // Mobil hassasiyeti (Daha akıcı olması için yüksek tutuyoruz)
+  // Mobil hassasiyeti
   const sensitivity = 0.006;
 
   state.targetOffset.x -= dx * sensitivity;
@@ -234,7 +238,7 @@ const onTouchEnd = () => {
   state.isDragging = false;
 };
 
-// --- MOUSE HANDLING (Masaüstü için) ---
+// --- MOUSE HANDLING ---
 const onMouseDown = (e: MouseEvent) => {
   state.isDragging = true;
   state.lastMouse.set(e.clientX, e.clientY);
@@ -249,7 +253,7 @@ const onMouseMove = (e: MouseEvent) => {
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
 
-  const sensitivity = 0.0025; // Masaüstü hassasiyeti
+  const sensitivity = 0.0025;
 
   state.targetOffset.x -= dx * sensitivity;
   state.targetOffset.y += dy * sensitivity;
@@ -261,7 +265,7 @@ const onMouseUp = () => {
   state.isDragging = false;
 };
 
-// 4. WHEEL & TOUCHPAD
+// 4. WHEEL
 const onWheel = (e: WheelEvent) => {
   e.preventDefault();
   const strength = 0.0025;
@@ -297,21 +301,17 @@ watch(
 onMounted(() => {
   window.addEventListener("resize", onResize);
 
-  const opts = { passive: false }; // preventDefault çalışması için şart
+  const opts = { passive: false };
 
   if (container.value) {
-    // MOBİL EVENTLERİNİ DOĞRUDAN CONTAINER'A VERİYORUZ
-    // Bu sayede parmak ekrana değdiği an yakalıyoruz.
     container.value.addEventListener("touchstart", onTouchStart, opts);
     container.value.addEventListener("touchmove", onTouchMove, opts);
     container.value.addEventListener("touchend", onTouchEnd);
 
-    // Masaüstü Eventleri
     container.value.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove); // Pencere dışına çıkarsa diye window
+    window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
 
-    // Wheel
     container.value.addEventListener("wheel", onWheel, opts);
   }
 });
