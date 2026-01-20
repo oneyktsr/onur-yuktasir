@@ -12,9 +12,9 @@
 
     <div class="max-w-6xl pt-10 mx-auto space-y-16 md:pt-0">
       <div class="pb-4 border-b border-custom-dark">
-        <h2 class="font-normal text-h2">Proje Style Guide</h2>
+        <h2 class="font-normal text-h2">Proje Style Guide (v2)</h2>
         <p class="font-light text-body opacity-70">
-          Tasarım sistemi referans kartı (Revize Edildi).
+          Tüm tipografi, boşluklar ve UI elemanları.
         </p>
       </div>
 
@@ -22,7 +22,7 @@
         <h3
           class="pb-2 font-normal tracking-wider uppercase border-b text-h3 border-custom-dark/20"
         >
-          1. Tipografi (Fluid & Weights)
+          1. Tipografi (Full Set)
         </h3>
         <div class="grid gap-8 md:gap-12">
           <div
@@ -39,9 +39,16 @@
               <p class="mt-2 text-small opacity-60">{{ font.desc }}</p>
             </div>
             <div class="flex-1 space-y-4">
-              <div :class="font.class" class="font-light break-words">
+              <div :class="font.class" class="font-normal break-words">
                 {{ font.sample }}
-                <span class="ml-2 opacity-40 text-small">(Light)</span>
+                <span class="ml-2 opacity-40 text-small">(Normal / 250)</span>
+              </div>
+              <div
+                :class="font.class"
+                class="font-light break-words opacity-80"
+              >
+                {{ font.sample }}
+                <span class="ml-2 opacity-40 text-small">(Light / 200)</span>
               </div>
             </div>
           </div>
@@ -79,17 +86,13 @@
         </div>
       </section>
 
-      <section class="pb-20 space-y-8">
+      <section class="space-y-8">
         <h3
           class="pb-2 font-normal tracking-wider uppercase border-b text-h3 border-custom-dark/20"
         >
-          3. Spacing / Boşluklar (Yeni)
+          3. Spacing / Boşluklar
         </h3>
         <div class="space-y-6">
-          <p class="text-body opacity-70">
-            Mobil (375px) -> Masaüstü (1440px) arası güncel değerler.
-          </p>
-
           <div
             v-for="(space, index) in spaces"
             :key="index"
@@ -106,8 +109,48 @@
             >
               {{ space.pixel }}
             </div>
-            <div class="text-[10px] font-mono opacity-50">
-              *-{{ space.name }}
+          </div>
+        </div>
+      </section>
+
+      <section class="pb-20 space-y-8">
+        <h3
+          class="pb-2 font-normal tracking-wider uppercase border-b text-h3 border-custom-dark/20"
+        >
+          4. UI Elements (Buttons & Inputs)
+        </h3>
+        <div class="grid gap-12 md:grid-cols-2">
+          <div class="space-y-6">
+            <p class="opacity-50 text-body">Buttons</p>
+            <div class="flex flex-col items-start gap-4">
+              <button
+                class="px-8 py-3 font-normal tracking-wider uppercase transition-colors duration-300 border border-custom-dark text-custom-dark hover:bg-custom-dark hover:text-custom-light text-small"
+              >
+                Primary Button
+              </button>
+              <button
+                class="px-0 py-1 font-normal tracking-wider uppercase transition-opacity duration-300 border-b border-custom-dark text-custom-dark hover:opacity-50 text-small"
+              >
+                Text Link Button
+              </button>
+              <div class="flex gap-4">
+                <button
+                  class="flex items-center justify-center w-12 h-12 transition-colors duration-300 border rounded-full border-custom-dark text-custom-dark hover:bg-custom-dark hover:text-custom-light"
+                >
+                  →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <p class="opacity-50 text-body">Form Inputs</p>
+            <div class="max-w-sm space-y-4">
+              <input
+                type="text"
+                placeholder="Input Placeholder"
+                class="w-full py-4 font-light transition-colors bg-transparent border-b border-custom-dark/30 text-body focus:outline-none focus:border-custom-dark placeholder:opacity-40"
+              />
             </div>
           </div>
         </div>
@@ -121,14 +164,21 @@ import { onMounted, onUnmounted, ref } from "vue";
 
 const isVisible = ref(false);
 
+// GÜNCELLENMİŞ TİPOGRAFİ LİSTESİ (H3, H4, Small Eklendi)
 const typography = [
-  { class: "text-display", desc: "44px -> 80px", sample: "Display Hero" },
-  { class: "text-h1", desc: "36px -> 64px", sample: "H1 Sayfa Başlığı" },
-  { class: "text-h2", desc: "28px -> 48px", sample: "H2 Bölüm Başlığı" },
-  { class: "text-body", desc: "16px -> 18px", sample: "Body metin alanı." },
+  { class: "text-display", desc: "Hero / Display", sample: "Display Hero" },
+  { class: "text-h1", desc: "H1 Sayfa Başlığı", sample: "H1 Başlık" },
+  { class: "text-h2", desc: "H2 Bölüm Başlığı", sample: "H2 Alt Başlık" },
+  { class: "text-h3", desc: "H3 Alt Başlık", sample: "H3 Konu Başlığı" }, // YENİ
+  { class: "text-h4", desc: "H4 / Button Text", sample: "H4 Detay Başlık" }, // YENİ
+  {
+    class: "text-body",
+    desc: "Body Metin",
+    sample: "Body text paragraf alanı.",
+  },
+  { class: "text-small", desc: "Small / Meta", sample: "Small detay metni." }, // YENİ
 ];
 
-// GÜNCELLENMİŞ DEĞERLER (Tailwind config ile uyumlu)
 const spaces = [
   { name: "xs", class: "w-xs", pixel: "4px -> 6px", desc: "Micro Gap" },
   { name: "sm", class: "w-sm", pixel: "8px -> 12px", desc: "Small Gap" },
