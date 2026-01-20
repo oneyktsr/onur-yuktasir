@@ -24,6 +24,7 @@ let plane: THREE.Mesh;
 let geometry: THREE.PlaneGeometry;
 let animationId: number;
 let initialized = false;
+let isMobile = false; // Mobil kontrolü için değişken
 
 const state = {
   offset: new THREE.Vector2(0, 0),
@@ -103,6 +104,9 @@ const initThree = async () => {
     container.value.innerHTML = "";
   }
 
+  // Mobil kontrolü (Ekran genişliğine göre)
+  isMobile = window.innerWidth < 768;
+
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
@@ -135,10 +139,13 @@ const initThree = async () => {
   const { texture, cols } = atlasData;
 
   // DÜZELTME: Güvenli Dispose İşlemi (Optional Chaining)
-  // TypeScript hatasını çözen kısım burasıdır.
   if (material?.uniforms?.uImageAtlas?.value) {
     material.uniforms.uImageAtlas.value.dispose();
   }
+
+  // ZOOM AYARI: Mobilde daha geriden (geniş) bak
+  // Masaüstü: 1.0, Mobil: 1.5 (Değer arttıkça kartlar küçülür/uzaklaşır)
+  const zoomValue = isMobile ? 1.5 : 1.0;
 
   material = new THREE.ShaderMaterial({
     vertexShader,
@@ -152,12 +159,12 @@ const initThree = async () => {
         ),
       },
       uMousePos: { value: new THREE.Vector2(0, 0) },
-      uZoom: { value: 1.0 },
+      uZoom: { value: zoomValue },
       uCellSize: { value: 0.6 },
       uTextureCount: { value: props.items.length },
       uGridCols: { value: cols },
       uImageAtlas: { value: texture },
-      // SHADER ARKAPLANI: #0d0e13 (Three.js Color)
+      // SHADER ARKAPLANI: #0d0e13
       uBackgroundColor: { value: new THREE.Color(0x0d0e13) },
     },
   });
@@ -208,20 +215,33 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   if (!state.isDragging) return;
   let x = 0,
     y = 0;
+
+  // Mobil olup olmadığını olay anında kontrol etmeye gerek yok,
+  // ancak touch event geliyorsa zaten mobildir.
+  let isTouch = false;
+
   if ("touches" in e) {
     const touch = e.touches[0];
     if (touch) {
       x = touch.clientX;
       y = touch.clientY;
+      isTouch = true;
     } else return;
   } else {
     x = (e as MouseEvent).clientX;
     y = (e as MouseEvent).clientY;
   }
+
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
-  state.targetOffset.x -= dx * 0.0025;
-  state.targetOffset.y += dy * 0.0025;
+
+  // HASSASİYET AYARI (SENSITIVITY)
+  // Masaüstü: 0.0025 (Standart)
+  // Mobil: 0.006 (Daha hızlı aksın, parmak az hareket etse de çok gitsin)
+  const sensitivity = isMobile || isTouch ? 0.006 : 0.0025;
+
+  state.targetOffset.x -= dx * sensitivity;
+  state.targetOffset.y += dy * sensitivity;
   state.lastMouse.set(x, y);
 };
 
@@ -231,19 +251,28 @@ const onMouseUp = () => {
 
 const onWheel = (e: WheelEvent) => {
   e.preventDefault();
+  // Scroll hassasiyeti
   const strength = 0.0025;
   state.targetOffset.x += e.deltaX * strength;
   state.targetOffset.y -= e.deltaY * strength;
 };
 
 const onResize = () => {
-  // Güvenli Erişim
   if (!container.value || !renderer || !material?.uniforms?.uResolution) return;
 
   const w = container.value.clientWidth;
   const h = container.value.clientHeight;
+
+  // Resize sırasında mobil kontrolünü güncelle
+  isMobile = w < 768;
+
   renderer.setSize(w, h);
   material.uniforms.uResolution.value.set(w, h);
+
+  // Resize olunca zoom'u da güncelle
+  if (material.uniforms.uZoom) {
+    material.uniforms.uZoom.value = isMobile ? 1.5 : 1.0;
+  }
 };
 
 // --- LIFECYCLE ---
@@ -281,7 +310,6 @@ onUnmounted(() => {
   window.removeEventListener("touchend", onMouseUp);
   window.removeEventListener("wheel", onWheel);
 
-  // DÜZELTME: Güvenli Dispose (Optional Chaining)
   if (material?.uniforms?.uImageAtlas?.value) {
     material.uniforms.uImageAtlas.value.dispose();
   }
