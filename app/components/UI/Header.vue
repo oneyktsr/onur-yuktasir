@@ -8,13 +8,22 @@
         <div class="col-span-2 md:col-span-2"></div>
 
         <div
-          class="col-span-2 col-start-3 text-right pointer-events-auto md:col-start-11 md:col-span-2 lg:hidden"
+          class="flex justify-end col-span-2 col-start-3 text-right pointer-events-auto md:col-start-11 md:col-span-2 lg:hidden"
         >
           <button
             @click="toggleMenu"
-            class="tracking-widest uppercase transition-opacity text-small hover:opacity-50"
+            class="flex flex-col justify-center items-end gap-[6px] w-10 h-6 transition-opacity hover:opacity-50 group"
+            aria-label="Toggle Menu"
           >
-            {{ isMenuOpen ? "Close" : "Menu" }}
+            <span
+              class="block w-8 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
+              :class="isMenuOpen ? 'translate-y-[3.5px] rotate-45' : ''"
+            ></span>
+
+            <span
+              class="block w-8 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
+              :class="isMenuOpen ? '-translate-y-[3.5px] -rotate-45' : ''"
+            ></span>
           </button>
         </div>
 
