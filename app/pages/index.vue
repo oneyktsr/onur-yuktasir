@@ -49,15 +49,24 @@
 
       <section class="w-full mb-section">
         <div
+          ref="videoContainerRef"
           class="w-full h-[100svh] bg-black relative overflow-hidden group cursor-pointer"
         >
-          <div
-            class="absolute inset-0 flex items-center justify-center transition-opacity opacity-30 group-hover:opacity-50"
-          >
+          <video
+            ref="videoRef"
+            class="absolute inset-0 object-cover w-full h-full transition-opacity duration-500 opacity-70 group-hover:opacity-50"
+            src="https://download-video-ak.vimeocdn.com/v3-1/playback/56fa7b5b-2384-4036-9b9e-ae1831a83b61/1235aa87-0b5bb3b9?__token__=st=1768935141~exp=1768938741~acl=%2Fv3-1%2Fplayback%2F56fa7b5b-2384-4036-9b9e-ae1831a83b61%2F1235aa87-0b5bb3b9%2A~hmac=ff19b5eb50306ede1c5822472f5ab76fb9e3f2511f00e05de1dac9e48e7d6de8&r=dXMtd2VzdDE%3D"
+            autoplay
+            loop
+            muted
+            playsinline
+          ></video>
+
+          <div class="absolute inset-0 z-10 flex items-center justify-center">
             <UITextReveal
               tag="span"
               type="lines"
-              class="text-[#e4e0db] text-h1 uppercase tracking-tighter"
+              class="text-[#e4e0db] text-h1 uppercase tracking-tighter mix-blend-difference"
             >
               Play Reel
             </UITextReveal>
@@ -237,3 +246,47 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+
+const { $gsap, $ScrollTrigger } = useNuxtApp();
+
+const videoContainerRef = ref(null);
+const videoRef = ref(null);
+
+let ctx: any;
+
+onMounted(() => {
+  if (!$gsap || !$ScrollTrigger) return;
+
+  ctx = $gsap.context(() => {
+    // --- VIDEO PARALLAX (MAXIMUM) ---
+    // Scale 1.5 (%50 zoom) -> Çok geniş hareket alanı.
+    // yPercent -35/+35 -> Çok belirgin kayma hissi.
+    if (videoContainerRef.value && videoRef.value) {
+      $gsap.fromTo(
+        videoRef.value,
+        {
+          scale: 1.5, // Oldukça büyüt
+          yPercent: -35, // Yukarıdan başla
+        },
+        {
+          yPercent: 35, // Aşağıda bitir
+          ease: "none",
+          scrollTrigger: {
+            trigger: videoContainerRef.value,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        },
+      );
+    }
+  }, videoContainerRef.value);
+});
+
+onUnmounted(() => {
+  if (ctx) ctx.revert();
+});
+</script>
