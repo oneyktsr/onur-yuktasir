@@ -4,10 +4,15 @@
       class="w-full min-h-screen bg-[#e4e0db] text-custom-dark overflow-hidden"
     >
       <section
+        ref="heroSectionRef"
         class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)]"
       >
         <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
-          <div class="col-span-4 md:col-span-8" data-speed="0.95">
+          <div
+            ref="heroTitleRef"
+            class="col-span-4 md:col-span-8"
+            data-speed="0.95"
+          >
             <UITextReveal
               tag="h1"
               type="lines"
@@ -252,6 +257,9 @@ import { ref, onMounted, onUnmounted } from "vue";
 
 const { $gsap, $ScrollTrigger } = useNuxtApp();
 
+// Referanslar
+const heroSectionRef = ref(null);
+const heroTitleRef = ref(null);
 const videoContainerRef = ref(null);
 const videoRef = ref(null);
 
@@ -261,18 +269,33 @@ onMounted(() => {
   if (!$gsap || !$ScrollTrigger) return;
 
   ctx = $gsap.context(() => {
-    // --- VIDEO PARALLAX (MAXIMUM) ---
-    // Scale 1.5 (%50 zoom) -> Çok geniş hareket alanı.
-    // yPercent -35/+35 -> Çok belirgin kayma hissi.
+    // 1. TITLE LAG (DAHA YAVAŞ)
+    // yPercent: 50 -> 80 yapıldı.
+    // Başlık scroll yaparken %80 oranında aşağı itiliyor (direnç gösteriyor).
+    // Bu sayede yukarı çıkışı çok yavaşlıyor.
+    if (heroTitleRef.value && heroSectionRef.value) {
+      $gsap.to(heroTitleRef.value, {
+        yPercent: 200, // %80 direnç (Çok yavaş çıkış)
+        ease: "none",
+        scrollTrigger: {
+          trigger: heroSectionRef.value,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    // 2. VIDEO PARALLAX (AYNI KALDI - MAX)
     if (videoContainerRef.value && videoRef.value) {
       $gsap.fromTo(
         videoRef.value,
         {
-          scale: 1.5, // Oldukça büyüt
-          yPercent: -35, // Yukarıdan başla
+          scale: 1.5,
+          yPercent: -35,
         },
         {
-          yPercent: 35, // Aşağıda bitir
+          yPercent: 35,
           ease: "none",
           scrollTrigger: {
             trigger: videoContainerRef.value,
@@ -283,7 +306,7 @@ onMounted(() => {
         },
       );
     }
-  }, videoContainerRef.value);
+  });
 });
 
 onUnmounted(() => {
