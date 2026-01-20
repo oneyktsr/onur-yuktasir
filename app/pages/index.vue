@@ -11,7 +11,7 @@
             <UITextReveal
               tag="h1"
               type="lines"
-              class="text-display font-light leading-[0.85] tracking-tighter -ml-[0.05em]"
+              class="text-display font-normal leading-[0.85] tracking-tighter -ml-[0.05em]"
             >
               Create. Connect. <br />
               Cultivate.
@@ -34,7 +34,7 @@
               tag="p"
               :delay="0.2"
               type="lines"
-              class="text-h4 leading-[1.1]"
+              class="text-h4 font-light leading-[1.1]"
             >
               We craft digital experiences that inspire engagement and deliver
               measurable impact for forward-thinking brands and businesses.

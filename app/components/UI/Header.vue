@@ -21,7 +21,7 @@
         <div class="hidden lg:block lg:col-span-5"></div>
 
         <nav
-          class="items-center justify-between hidden leading-none pointer-events-auto lg:flex lg:col-span-3 text-body"
+          class="items-center justify-between hidden font-normal leading-none pointer-events-auto lg:flex lg:col-span-3 text-body"
         >
           <NuxtLink to="/studio" class="transition-opacity hover:opacity-50"
             >Studio</NuxtLink
