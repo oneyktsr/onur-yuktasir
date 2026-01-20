@@ -24,7 +24,7 @@ let plane: THREE.Mesh;
 let geometry: THREE.PlaneGeometry;
 let animationId: number;
 let initialized = false;
-let isMobile = false; // Mobil kontrolü için değişken
+let isMobile = false;
 
 const state = {
   offset: new THREE.Vector2(0, 0),
@@ -33,19 +33,25 @@ const state = {
   lastMouse: new THREE.Vector2(0, 0),
 };
 
-// --- TEXTURE ATLAS ---
+// --- TEXTURE ATLAS (OPTIMIZED) ---
 const createTextureAtlas = async (urls: string[]) => {
   if (urls.length === 0) return null;
 
   const count = urls.length;
   const cols = Math.ceil(Math.sqrt(count));
-  const canvasSize = 2048;
+
+  // PERFORMANS AYARI 1: Mobil İçin Küçük Atlas
+  // Masaüstünde 2048px (Netlik için), Mobilde 1024px (Hız için)
+  // Bu işlem açılış süresini ciddi oranda kısaltır.
+  const isSmallScreen = window.innerWidth < 768;
+  const canvasSize = isSmallScreen ? 1024 : 2048;
+
   const cellSize = canvasSize / cols;
 
   const canvas = document.createElement("canvas");
   canvas.width = canvasSize;
   canvas.height = canvasSize;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { willReadFrequently: false }); // GPU optimizasyonu
 
   if (!ctx) return null;
 
@@ -88,6 +94,7 @@ const createTextureAtlas = async (urls: string[]) => {
   });
 
   const texture = new THREE.CanvasTexture(canvas);
+  // Mobilde LinearFilter yeterlidir, daha az işlemci harcar.
   texture.minFilter = THREE.LinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = false;
@@ -104,25 +111,28 @@ const initThree = async () => {
     container.value.innerHTML = "";
   }
 
-  // Mobil kontrolü (Ekran genişliğine göre)
   isMobile = window.innerWidth < 768;
 
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-  // --- PERFORMANS AYARLARI ---
+  // --- PERFORMANS AYARLARI 2: Render Motoru ---
   renderer = new THREE.WebGLRenderer({
-    antialias: true,
+    antialias: !isMobile, // Mobilde kenar yumuşatmayı kapat (Büyük FPS artışı)
     alpha: true,
     powerPreference: "high-performance",
     stencil: false,
     depth: false,
+    preserveDrawingBuffer: false,
   });
 
   renderer.setSize(container.value.clientWidth, container.value.clientHeight);
 
-  // DPR Optimizasyonu
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // PERFORMANS AYARI 3: Pixel Ratio Limiti
+  // Mobilde max 1.5, Masaüstünde max 2.0
+  // Bu, telefonların ısınmasını engeller ve scroll'u yağ gibi yapar.
+  const pixelRatioLimit = isMobile ? 1.5 : 2.0;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioLimit));
 
   // RENDERER ARKAPLANI: #0d0e13
   renderer.setClearColor(0x0d0e13, 1);
@@ -138,13 +148,11 @@ const initThree = async () => {
 
   const { texture, cols } = atlasData;
 
-  // DÜZELTME: Güvenli Dispose İşlemi (Optional Chaining)
   if (material?.uniforms?.uImageAtlas?.value) {
     material.uniforms.uImageAtlas.value.dispose();
   }
 
-  // ZOOM AYARI: Mobilde daha geriden (geniş) bak
-  // Masaüstü: 1.0, Mobil: 1.5 (Değer arttıkça kartlar küçülür/uzaklaşır)
+  // ZOOM AYARI: Mobilde 1.5 (Uzak), Masaüstü 1.0 (Yakın)
   const zoomValue = isMobile ? 1.5 : 1.0;
 
   material = new THREE.ShaderMaterial({
@@ -164,7 +172,6 @@ const initThree = async () => {
       uTextureCount: { value: props.items.length },
       uGridCols: { value: cols },
       uImageAtlas: { value: texture },
-      // SHADER ARKAPLANI: #0d0e13
       uBackgroundColor: { value: new THREE.Color(0x0d0e13) },
     },
   });
@@ -183,7 +190,6 @@ const animate = () => {
   animationId = requestAnimationFrame(animate);
   state.offset.lerp(state.targetOffset, 0.075);
 
-  // Güvenli Erişim
   if (material?.uniforms?.uOffset) {
     material.uniforms.uOffset.value.copy(state.offset);
   }
@@ -215,9 +221,6 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   if (!state.isDragging) return;
   let x = 0,
     y = 0;
-
-  // Mobil olup olmadığını olay anında kontrol etmeye gerek yok,
-  // ancak touch event geliyorsa zaten mobildir.
   let isTouch = false;
 
   if ("touches" in e) {
@@ -235,9 +238,7 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
 
-  // HASSASİYET AYARI (SENSITIVITY)
-  // Masaüstü: 0.0025 (Standart)
-  // Mobil: 0.006 (Daha hızlı aksın, parmak az hareket etse de çok gitsin)
+  // HASSASİYET: Mobilde parmak hareketi daha seri olsun
   const sensitivity = isMobile || isTouch ? 0.006 : 0.0025;
 
   state.targetOffset.x -= dx * sensitivity;
@@ -251,7 +252,6 @@ const onMouseUp = () => {
 
 const onWheel = (e: WheelEvent) => {
   e.preventDefault();
-  // Scroll hassasiyeti
   const strength = 0.0025;
   state.targetOffset.x += e.deltaX * strength;
   state.targetOffset.y -= e.deltaY * strength;
@@ -263,13 +263,13 @@ const onResize = () => {
   const w = container.value.clientWidth;
   const h = container.value.clientHeight;
 
-  // Resize sırasında mobil kontrolünü güncelle
+  // Resize sırasında mobil modunu güncelle
   isMobile = w < 768;
 
   renderer.setSize(w, h);
   material.uniforms.uResolution.value.set(w, h);
 
-  // Resize olunca zoom'u da güncelle
+  // Zoom güncelle
   if (material.uniforms.uZoom) {
     material.uniforms.uZoom.value = isMobile ? 1.5 : 1.0;
   }
