@@ -1,18 +1,21 @@
 /* assets/css/main.css */
 
-/* 1. Font Tanımları */
+/* 1. Font Tanımları (GÜNCELLENDİ) */
+
+/* Extra Light / Thin (Eski 300 yerine 200) */
 @font-face {
   font-family: "TWKLausanne";
-  src: url("~/assets/fonts/TWKLausanne-300.woff2") format("woff2");
-  font-weight: 300;
+  src: url("~/assets/fonts/TWKLausanne-200.woff2") format("woff2");
+  font-weight: 200;
   font-style: normal;
   font-display: block;
 }
 
+/* Regular Alternatifi (Eski 400 yerine 250) */
 @font-face {
   font-family: "TWKLausanne";
-  src: url("~/assets/fonts/TWKLausanne-400.woff2") format("woff2");
-  font-weight: 400;
+  src: url("~/assets/fonts/TWKLausanne-250.woff2") format("woff2");
+  font-weight: 250;
   font-style: normal;
   font-display: block;
 }
@@ -22,7 +25,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 3. STRICT LAYOUT RESET (Scroll Fix) */
+/* 3. STRICT LAYOUT RESET */
 html,
 body {
   width: 100%;
@@ -30,11 +33,18 @@ body {
   margin: 0;
   padding: 0 !important;
 
-  /* KRİTİK: ScrollSmoother için bu GEREKLİDİR. Yoksa kilitlenir. */
+  /* ScrollSmoother için GEREKLİ */
   overflow: hidden !important;
 
   /* Sitenin arka plan rengi */
   background-color: #e4e0db;
+
+  /* Mobil tarayıcı barı değişse bile tam ekran kalmasını sağlar */
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  /* Varsayılan Font Ağırlığı: 250 */
+  font-weight: 250;
 }
 
 /* 4. GSAP WRAPPER */
@@ -52,7 +62,6 @@ body {
 
 #smooth-content {
   width: 100vw !important;
-  /* İçeriğin en az ekran kadar olmasını sağlar */
   min-height: 100vh;
   box-sizing: border-box;
 
