@@ -1,7 +1,7 @@
 <template>
   <div
     ref="container"
-    class="fixed inset-0 w-full h-full z-0 overflow-hidden cursor-grab active:cursor-grabbing bg-[#0d0e13]"
+    class="fixed inset-0 w-full h-full z-0 overflow-hidden cursor-grab active:cursor-grabbing bg-[#0d0e13] touch-action-none"
   ></div>
 </template>
 
@@ -40,9 +40,6 @@ const createTextureAtlas = async (urls: string[]) => {
   const count = urls.length;
   const cols = Math.ceil(Math.sqrt(count));
 
-  // PERFORMANS AYARI 1: Mobil İçin Küçük Atlas
-  // Masaüstünde 2048px (Netlik için), Mobilde 1024px (Hız için)
-  // Bu işlem açılış süresini ciddi oranda kısaltır.
   const isSmallScreen = window.innerWidth < 768;
   const canvasSize = isSmallScreen ? 1024 : 2048;
 
@@ -51,11 +48,10 @@ const createTextureAtlas = async (urls: string[]) => {
   const canvas = document.createElement("canvas");
   canvas.width = canvasSize;
   canvas.height = canvasSize;
-  const ctx = canvas.getContext("2d", { willReadFrequently: false }); // GPU optimizasyonu
+  const ctx = canvas.getContext("2d", { willReadFrequently: false });
 
   if (!ctx) return null;
 
-  // ATLAS ARKAPLANI: #0d0e13
   ctx.fillStyle = "#0d0e13";
   ctx.fillRect(0, 0, canvasSize, canvasSize);
 
@@ -94,7 +90,6 @@ const createTextureAtlas = async (urls: string[]) => {
   });
 
   const texture = new THREE.CanvasTexture(canvas);
-  // Mobilde LinearFilter yeterlidir, daha az işlemci harcar.
   texture.minFilter = THREE.LinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = false;
@@ -116,9 +111,8 @@ const initThree = async () => {
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-  // --- PERFORMANS AYARLARI 2: Render Motoru ---
   renderer = new THREE.WebGLRenderer({
-    antialias: !isMobile, // Mobilde kenar yumuşatmayı kapat (Büyük FPS artışı)
+    antialias: !isMobile,
     alpha: true,
     powerPreference: "high-performance",
     stencil: false,
@@ -128,13 +122,9 @@ const initThree = async () => {
 
   renderer.setSize(container.value.clientWidth, container.value.clientHeight);
 
-  // PERFORMANS AYARI 3: Pixel Ratio Limiti
-  // Mobilde max 1.5, Masaüstünde max 2.0
-  // Bu, telefonların ısınmasını engeller ve scroll'u yağ gibi yapar.
   const pixelRatioLimit = isMobile ? 1.5 : 2.0;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioLimit));
 
-  // RENDERER ARKAPLANI: #0d0e13
   renderer.setClearColor(0x0d0e13, 1);
 
   container.value.appendChild(renderer.domElement);
@@ -152,7 +142,6 @@ const initThree = async () => {
     material.uniforms.uImageAtlas.value.dispose();
   }
 
-  // ZOOM AYARI: Mobilde 1.5 (Uzak), Masaüstü 1.0 (Yakın)
   const zoomValue = isMobile ? 1.5 : 1.0;
 
   material = new THREE.ShaderMaterial({
@@ -199,11 +188,20 @@ const animate = () => {
   }
 };
 
-// --- EVENTS ---
+// --- EVENTS (TOUCH FIX) ---
+
 const onMouseDown = (e: MouseEvent | TouchEvent) => {
+  // FIX 2: Dokunma anında native davranışları engelle (Örn: zoom, scroll, refresh)
+  // Bu satır parmağın anında algılanmasını sağlar.
+  if ("touches" in e) {
+    // e.preventDefault(); // *Not: preventDefault'u burada kullanmak click'i engelleyebilir,
+    // ama 'touch-action: none' CSS'i bunu zaten hallediyor. Yine de garanti olsun istersen açabilirsin.
+  }
+
   state.isDragging = true;
   let x = 0,
     y = 0;
+
   if ("touches" in e) {
     const touch = e.touches[0];
     if (touch) {
@@ -219,6 +217,12 @@ const onMouseDown = (e: MouseEvent | TouchEvent) => {
 
 const onMouseMove = (e: MouseEvent | TouchEvent) => {
   if (!state.isDragging) return;
+
+  // FIX 3: Sürükleme sırasında native scroll'u kesinlikle engelle
+  if ("touches" in e) {
+    e.preventDefault();
+  }
+
   let x = 0,
     y = 0;
   let isTouch = false;
@@ -238,7 +242,6 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
 
-  // HASSASİYET: Mobilde parmak hareketi daha seri olsun
   const sensitivity = isMobile || isTouch ? 0.006 : 0.0025;
 
   state.targetOffset.x -= dx * sensitivity;
@@ -262,14 +265,11 @@ const onResize = () => {
 
   const w = container.value.clientWidth;
   const h = container.value.clientHeight;
-
-  // Resize sırasında mobil modunu güncelle
   isMobile = w < 768;
 
   renderer.setSize(w, h);
   material.uniforms.uResolution.value.set(w, h);
 
-  // Zoom güncelle
   if (material.uniforms.uZoom) {
     material.uniforms.uZoom.value = isMobile ? 1.5 : 1.0;
   }
@@ -290,12 +290,22 @@ watch(
 
 onMounted(() => {
   window.addEventListener("resize", onResize);
+
+  // FIX 4: Event Listener Options -> { passive: false }
+  // Bu seçenek, 'e.preventDefault()' komutunun çalışabilmesi için ZORUNLUDUR.
+  // Modern tarayıcılar varsayılan olarak passive: true yapar (scroll performansı için).
+  // Biz bunu false yaparak "Hayır, kontrol bende" diyoruz.
+  const opts = { passive: false };
+
   window.addEventListener("mousedown", onMouseDown);
   window.addEventListener("mousemove", onMouseMove);
   window.addEventListener("mouseup", onMouseUp);
-  window.addEventListener("touchstart", onMouseDown);
-  window.addEventListener("touchmove", onMouseMove);
+
+  // Touch eventleri için özel options kullanıyoruz
+  window.addEventListener("touchstart", onMouseDown, opts);
+  window.addEventListener("touchmove", onMouseMove, opts);
   window.addEventListener("touchend", onMouseUp);
+
   window.addEventListener("wheel", onWheel, { passive: false });
 });
 
@@ -318,3 +328,15 @@ onUnmounted(() => {
   initialized = false;
 });
 </script>
+
+<style scoped>
+/* Ekstra Güvenlik:
+  Eğer Tailwind class'ı çalışmazsa diye manuel CSS.
+  Kullanıcının sayfayı seçmesini veya native sürükleme yapmasını engeller.
+*/
+div {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+</style>
