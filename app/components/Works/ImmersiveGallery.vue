@@ -1,7 +1,13 @@
 <template>
   <div
     ref="container"
-    class="fixed inset-0 w-full h-full z-0 overflow-hidden cursor-grab active:cursor-grabbing bg-[#0d0e13] touch-action-none"
+    class="fixed inset-0 w-full h-full z-0 overflow-hidden cursor-grab active:cursor-grabbing bg-[#0d0e13]"
+    style="
+      touch-action: none;
+      overscroll-behavior: none;
+      -webkit-user-select: none;
+      user-select: none;
+    "
   ></div>
 </template>
 
@@ -33,7 +39,7 @@ const state = {
   lastMouse: new THREE.Vector2(0, 0),
 };
 
-// --- TEXTURE ATLAS (OPTIMIZED) ---
+// --- TEXTURE ATLAS ---
 const createTextureAtlas = async (urls: string[]) => {
   if (urls.length === 0) return null;
 
@@ -188,14 +194,14 @@ const animate = () => {
   }
 };
 
-// --- EVENTS (TOUCH FIX) ---
+// --- INPUT HANDLING ---
 
-const onMouseDown = (e: MouseEvent | TouchEvent) => {
-  // FIX 2: Dokunma anında native davranışları engelle (Örn: zoom, scroll, refresh)
-  // Bu satır parmağın anında algılanmasını sağlar.
-  if ("touches" in e) {
-    // e.preventDefault(); // *Not: preventDefault'u burada kullanmak click'i engelleyebilir,
-    // ama 'touch-action: none' CSS'i bunu zaten hallediyor. Yine de garanti olsun istersen açabilirsin.
+// 1. TOUCH / MOUSE START
+const onStart = (e: MouseEvent | TouchEvent) => {
+  // KİLİT NOKTA: Tarayıcının "scroll mu drag mi?" diye düşünmesini engelle.
+  // Bu satır olmazsa, tarayıcı önce dikey hareketi bekler.
+  if (e.cancelable && e.type === "touchstart") {
+    e.preventDefault();
   }
 
   state.isDragging = true;
@@ -203,23 +209,23 @@ const onMouseDown = (e: MouseEvent | TouchEvent) => {
     y = 0;
 
   if ("touches" in e) {
-    const touch = e.touches[0];
-    if (touch) {
-      x = touch.clientX;
-      y = touch.clientY;
-    }
+    const touch = (e as TouchEvent).touches[0];
+    x = touch.clientX;
+    y = touch.clientY;
   } else {
     x = (e as MouseEvent).clientX;
     y = (e as MouseEvent).clientY;
   }
+
   state.lastMouse.set(x, y);
 };
 
-const onMouseMove = (e: MouseEvent | TouchEvent) => {
+// 2. TOUCH / MOUSE MOVE
+const onMove = (e: MouseEvent | TouchEvent) => {
   if (!state.isDragging) return;
 
-  // FIX 3: Sürükleme sırasında native scroll'u kesinlikle engelle
-  if ("touches" in e) {
+  // KİLİT NOKTA 2: Hareket sırasında native scroll'u tamamen öldür.
+  if (e.cancelable && e.type === "touchmove") {
     e.preventDefault();
   }
 
@@ -228,12 +234,14 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   let isTouch = false;
 
   if ("touches" in e) {
-    const touch = e.touches[0];
+    const touch = (e as TouchEvent).touches[0];
     if (touch) {
       x = touch.clientX;
       y = touch.clientY;
       isTouch = true;
-    } else return;
+    } else {
+      return;
+    }
   } else {
     x = (e as MouseEvent).clientX;
     y = (e as MouseEvent).clientY;
@@ -242,6 +250,7 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
 
+  // Mobilde parmak hareketi daha az piksel kaplar, bu yüzden hassasiyeti artırıyoruz.
   const sensitivity = isMobile || isTouch ? 0.006 : 0.0025;
 
   state.targetOffset.x -= dx * sensitivity;
@@ -249,27 +258,30 @@ const onMouseMove = (e: MouseEvent | TouchEvent) => {
   state.lastMouse.set(x, y);
 };
 
-const onMouseUp = () => {
+// 3. TOUCH / MOUSE END
+const onEnd = () => {
   state.isDragging = false;
 };
 
+// 4. TOUCHPAD & WHEEL
 const onWheel = (e: WheelEvent) => {
+  // Touchpad'in native geri/ileri veya scroll davranışını engelle
   e.preventDefault();
+
   const strength = 0.0025;
+
+  // Touchpad ile hem X hem Y ekseninde serbest dolaşım
   state.targetOffset.x += e.deltaX * strength;
   state.targetOffset.y -= e.deltaY * strength;
 };
 
 const onResize = () => {
   if (!container.value || !renderer || !material?.uniforms?.uResolution) return;
-
   const w = container.value.clientWidth;
   const h = container.value.clientHeight;
   isMobile = w < 768;
-
   renderer.setSize(w, h);
   material.uniforms.uResolution.value.set(w, h);
-
   if (material.uniforms.uZoom) {
     material.uniforms.uZoom.value = isMobile ? 1.5 : 1.0;
   }
@@ -291,33 +303,39 @@ watch(
 onMounted(() => {
   window.addEventListener("resize", onResize);
 
-  // FIX 4: Event Listener Options -> { passive: false }
-  // Bu seçenek, 'e.preventDefault()' komutunun çalışabilmesi için ZORUNLUDUR.
-  // Modern tarayıcılar varsayılan olarak passive: true yapar (scroll performansı için).
-  // Biz bunu false yaparak "Hayır, kontrol bende" diyoruz.
+  // ÖNEMLİ: passive: false ayarı, preventDefault() kullanabilmek için şarttır.
   const opts = { passive: false };
 
-  window.addEventListener("mousedown", onMouseDown);
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
+  // Mouse Events (Window'a bağlıyoruz ki dışarı çıksa da yakalasın)
+  window.addEventListener("mousedown", onStart);
+  window.addEventListener("mousemove", onMove);
+  window.addEventListener("mouseup", onEnd);
 
-  // Touch eventleri için özel options kullanıyoruz
-  window.addEventListener("touchstart", onMouseDown, opts);
-  window.addEventListener("touchmove", onMouseMove, opts);
-  window.addEventListener("touchend", onMouseUp);
+  // Touch Events (Doğrudan Container'a bağlıyoruz ki 'touch-action' etkili olsun)
+  // Ancak move ve end olaylarını window'da tutmak, parmak ekrandan kaysa bile takibi sağlar.
+  if (container.value) {
+    container.value.addEventListener("touchstart", onStart, opts);
+  }
+  window.addEventListener("touchmove", onMove, opts);
+  window.addEventListener("touchend", onEnd);
 
+  // Wheel
   window.addEventListener("wheel", onWheel, { passive: false });
 });
 
 onUnmounted(() => {
   cancelAnimationFrame(animationId);
   window.removeEventListener("resize", onResize);
-  window.removeEventListener("mousedown", onMouseDown);
-  window.removeEventListener("mousemove", onMouseMove);
-  window.removeEventListener("mouseup", onMouseUp);
-  window.removeEventListener("touchstart", onMouseDown);
-  window.removeEventListener("touchmove", onMouseMove);
-  window.removeEventListener("touchend", onMouseUp);
+
+  window.removeEventListener("mousedown", onStart);
+  window.removeEventListener("mousemove", onMove);
+  window.removeEventListener("mouseup", onEnd);
+
+  if (container.value) {
+    container.value.removeEventListener("touchstart", onStart);
+  }
+  window.removeEventListener("touchmove", onMove);
+  window.removeEventListener("touchend", onEnd);
   window.removeEventListener("wheel", onWheel);
 
   if (material?.uniforms?.uImageAtlas?.value) {
@@ -328,15 +346,3 @@ onUnmounted(() => {
   initialized = false;
 });
 </script>
-
-<style scoped>
-/* Ekstra Güvenlik:
-  Eğer Tailwind class'ı çalışmazsa diye manuel CSS.
-  Kullanıcının sayfayı seçmesini veya native sürükleme yapmasını engeller.
-*/
-div {
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-</style>
