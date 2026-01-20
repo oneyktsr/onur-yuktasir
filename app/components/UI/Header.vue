@@ -4,9 +4,7 @@
       ref="headerRef"
       class="fixed top-0 left-0 w-full z-[9000] px-layout pt-layout mix-blend-difference text-[#e4e0db] pointer-events-none"
     >
-      <div
-        class="grid items-center w-full grid-cols-4 md:grid-cols-12 gap-x-md"
-      >
+      <div class="grid items-start w-full grid-cols-4 md:grid-cols-12 gap-x-md">
         <div class="col-span-2 md:col-span-2"></div>
 
         <div
@@ -20,7 +18,7 @@
           </button>
         </div>
 
-        <div class="hidden lg:block lg:col-span-4"></div>
+        <div class="hidden lg:block lg:col-span-5"></div>
 
         <nav
           class="items-center justify-between hidden leading-none pointer-events-auto lg:flex lg:col-span-3 text-body"
@@ -39,7 +37,7 @@
           >
         </nav>
 
-        <div class="hidden lg:block lg:col-span-2"></div>
+        <div class="hidden lg:block lg:col-span-1"></div>
 
         <div
           class="hidden leading-none text-right pointer-events-auto lg:block lg:col-span-1"
@@ -142,8 +140,6 @@ const handleNav = (path: string) => {
   pendingRoute.value = path;
   isMenuOpen.value = false;
 };
-
-// --- (DÜZELTME) theme-color useHead bloğu SİLİNDİ ---
 
 // HEADER GİRİŞ (Fade-In)
 onMounted(() => {

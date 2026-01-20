@@ -4,7 +4,7 @@
       class="w-full min-h-screen bg-[#e4e0db] text-custom-dark overflow-hidden"
     >
       <section
-        class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*2+3rem)]"
+        class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)]"
       >
         <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
           <div class="col-span-4 md:col-span-8" data-speed="0.95">
@@ -29,7 +29,7 @@
             </NuxtLink>
           </div>
 
-          <div class="col-span-4 text-left md:col-span-6 md:col-start-7">
+          <div class="col-span-4 text-left md:col-span-5 md:col-start-8">
             <UITextReveal
               tag="p"
               :delay="0.2"
