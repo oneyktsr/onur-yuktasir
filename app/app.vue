@@ -26,7 +26,7 @@ import { watch, nextTick, onMounted, computed } from "vue";
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
 
-// Yüklenene kadar kilit
+// Sayfa yüklenene kadar scroll kilitlenir
 useHead({
   bodyAttrs: {
     class: computed(() =>
@@ -41,18 +41,26 @@ onMounted(() => {
       ($ScrollSmoother as any).create({
         wrapper: "#smooth-wrapper",
         content: "#smooth-content",
-        smooth: 1.0,
-        effects: true,
-        // DÜZELTME: Scroll'un çalışması için bu yapı şart.
+        smooth: 1.0, // Masaüstü yumuşatma süresi (1 saniye)
+        effects: true, // Parallax efektlerini (data-speed) aktif eder
+
+        // --- MOBİL AYARLARI ---
+        // 0.1 değeri mobilde "native" hissi verirken arka planda
+        // GSAP hesaplamalarının (parallax vb.) akıcı çalışmasını sağlar.
+        smoothTouch: 0.1,
+
+        // Mobil tarayıcıların adres çubuğu gizlenmesi/yenilenmesi
+        // sırasındaki zıplamaları önlemek için normalize ayarları
         normalizeScroll: {
           allowNestedScroll: true,
-          debounce: false,
-          type: "touch,wheel", // Hem touch hem wheel olaylarını yakala
+          debounce: true,
+          type: "touch,wheel",
         },
-        ignoreMobileResize: true,
-        smoothTouch: 0, // Mobilde native hız (takılma olmaz)
+
+        ignoreMobileResize: true, // Klavye açılınca hesaplamaları bozma
       });
 
+      // Yükleme bitmediyse scroll'u durdur
       if (!isLoaded.value) {
         const smoother = ($ScrollSmoother as any).get();
         if (smoother) smoother.paused(true);
@@ -63,13 +71,17 @@ onMounted(() => {
   }
 });
 
+// Preloader bittiğinde scroll'u serbest bırak
 watch(isLoaded, (val) => {
   if (val && $ScrollSmoother) {
     const smoother = ($ScrollSmoother as any).get();
     if (smoother) smoother.paused(false);
+
+    // DOM tam oturduktan sonra ScrollTrigger'ı yenile
+    // Parallax hesaplamalarının kaymaması için ufak bir gecikme iyidir.
     setTimeout(() => {
       if ($ScrollTrigger) ($ScrollTrigger as any).refresh();
-    }, 100);
+    }, 500);
   }
 });
 </script>
