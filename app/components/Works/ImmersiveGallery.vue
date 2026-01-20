@@ -7,6 +7,7 @@
       overscroll-behavior: none;
       -webkit-user-select: none;
       user-select: none;
+      -webkit-touch-callout: none;
     "
   ></div>
 </template>
@@ -130,7 +131,6 @@ const initThree = async () => {
 
   const pixelRatioLimit = isMobile ? 1.5 : 2.0;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioLimit));
-
   renderer.setClearColor(0x0d0e13, 1);
 
   container.value.appendChild(renderer.domElement);
@@ -194,83 +194,77 @@ const animate = () => {
   }
 };
 
-// --- INPUT HANDLING ---
+// --- INPUT HANDLING (GÜNCELLENDİ) ---
 
-// 1. TOUCH / MOUSE START
-const onStart = (e: MouseEvent | TouchEvent) => {
-  // KİLİT NOKTA: Tarayıcının "scroll mu drag mi?" diye düşünmesini engelle.
-  // Bu satır olmazsa, tarayıcı önce dikey hareketi bekler.
-  if (e.cancelable && e.type === "touchstart") {
-    e.preventDefault();
-  }
+// 1. TOUCH START
+const onTouchStart = (e: TouchEvent) => {
+  // Tarayıcıya "Dur, bu olay benim" diyoruz.
+  if (e.cancelable) e.preventDefault();
 
   state.isDragging = true;
-  let x = 0,
-    y = 0;
-
-  if ("touches" in e) {
-    const touch = (e as TouchEvent).touches[0];
-    x = touch.clientX;
-    y = touch.clientY;
-  } else {
-    x = (e as MouseEvent).clientX;
-    y = (e as MouseEvent).clientY;
-  }
-
-  state.lastMouse.set(x, y);
+  const touch = e.touches[0];
+  state.lastMouse.set(touch.clientX, touch.clientY);
 };
 
-// 2. TOUCH / MOUSE MOVE
-const onMove = (e: MouseEvent | TouchEvent) => {
+// 2. TOUCH MOVE
+const onTouchMove = (e: TouchEvent) => {
+  // Scroll yapılmasını kesinlikle engelle
+  if (e.cancelable) e.preventDefault();
+
   if (!state.isDragging) return;
 
-  // KİLİT NOKTA 2: Hareket sırasında native scroll'u tamamen öldür.
-  if (e.cancelable && e.type === "touchmove") {
-    e.preventDefault();
-  }
-
-  let x = 0,
-    y = 0;
-  let isTouch = false;
-
-  if ("touches" in e) {
-    const touch = (e as TouchEvent).touches[0];
-    if (touch) {
-      x = touch.clientX;
-      y = touch.clientY;
-      isTouch = true;
-    } else {
-      return;
-    }
-  } else {
-    x = (e as MouseEvent).clientX;
-    y = (e as MouseEvent).clientY;
-  }
+  const touch = e.touches[0];
+  const x = touch.clientX;
+  const y = touch.clientY;
 
   const dx = x - state.lastMouse.x;
   const dy = y - state.lastMouse.y;
 
-  // Mobilde parmak hareketi daha az piksel kaplar, bu yüzden hassasiyeti artırıyoruz.
-  const sensitivity = isMobile || isTouch ? 0.006 : 0.0025;
+  // Mobil hassasiyeti (Daha akıcı olması için yüksek tutuyoruz)
+  const sensitivity = 0.006;
 
   state.targetOffset.x -= dx * sensitivity;
   state.targetOffset.y += dy * sensitivity;
+
   state.lastMouse.set(x, y);
 };
 
-// 3. TOUCH / MOUSE END
-const onEnd = () => {
+// 3. TOUCH END
+const onTouchEnd = () => {
   state.isDragging = false;
 };
 
-// 4. TOUCHPAD & WHEEL
+// --- MOUSE HANDLING (Masaüstü için) ---
+const onMouseDown = (e: MouseEvent) => {
+  state.isDragging = true;
+  state.lastMouse.set(e.clientX, e.clientY);
+};
+
+const onMouseMove = (e: MouseEvent) => {
+  if (!state.isDragging) return;
+
+  const x = e.clientX;
+  const y = e.clientY;
+
+  const dx = x - state.lastMouse.x;
+  const dy = y - state.lastMouse.y;
+
+  const sensitivity = 0.0025; // Masaüstü hassasiyeti
+
+  state.targetOffset.x -= dx * sensitivity;
+  state.targetOffset.y += dy * sensitivity;
+
+  state.lastMouse.set(x, y);
+};
+
+const onMouseUp = () => {
+  state.isDragging = false;
+};
+
+// 4. WHEEL & TOUCHPAD
 const onWheel = (e: WheelEvent) => {
-  // Touchpad'in native geri/ileri veya scroll davranışını engelle
   e.preventDefault();
-
   const strength = 0.0025;
-
-  // Touchpad ile hem X hem Y ekseninde serbest dolaşım
   state.targetOffset.x += e.deltaX * strength;
   state.targetOffset.y -= e.deltaY * strength;
 };
@@ -303,40 +297,40 @@ watch(
 onMounted(() => {
   window.addEventListener("resize", onResize);
 
-  // ÖNEMLİ: passive: false ayarı, preventDefault() kullanabilmek için şarttır.
-  const opts = { passive: false };
+  const opts = { passive: false }; // preventDefault çalışması için şart
 
-  // Mouse Events (Window'a bağlıyoruz ki dışarı çıksa da yakalasın)
-  window.addEventListener("mousedown", onStart);
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", onEnd);
-
-  // Touch Events (Doğrudan Container'a bağlıyoruz ki 'touch-action' etkili olsun)
-  // Ancak move ve end olaylarını window'da tutmak, parmak ekrandan kaysa bile takibi sağlar.
   if (container.value) {
-    container.value.addEventListener("touchstart", onStart, opts);
-  }
-  window.addEventListener("touchmove", onMove, opts);
-  window.addEventListener("touchend", onEnd);
+    // MOBİL EVENTLERİNİ DOĞRUDAN CONTAINER'A VERİYORUZ
+    // Bu sayede parmak ekrana değdiği an yakalıyoruz.
+    container.value.addEventListener("touchstart", onTouchStart, opts);
+    container.value.addEventListener("touchmove", onTouchMove, opts);
+    container.value.addEventListener("touchend", onTouchEnd);
 
-  // Wheel
-  window.addEventListener("wheel", onWheel, { passive: false });
+    // Masaüstü Eventleri
+    container.value.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove); // Pencere dışına çıkarsa diye window
+    window.addEventListener("mouseup", onMouseUp);
+
+    // Wheel
+    container.value.addEventListener("wheel", onWheel, opts);
+  }
 });
 
 onUnmounted(() => {
   cancelAnimationFrame(animationId);
   window.removeEventListener("resize", onResize);
 
-  window.removeEventListener("mousedown", onStart);
-  window.removeEventListener("mousemove", onMove);
-  window.removeEventListener("mouseup", onEnd);
-
   if (container.value) {
-    container.value.removeEventListener("touchstart", onStart);
+    container.value.removeEventListener("touchstart", onTouchStart);
+    container.value.removeEventListener("touchmove", onTouchMove);
+    container.value.removeEventListener("touchend", onTouchEnd);
+
+    container.value.removeEventListener("mousedown", onMouseDown);
+    container.value.removeEventListener("wheel", onWheel);
   }
-  window.removeEventListener("touchmove", onMove);
-  window.removeEventListener("touchend", onEnd);
-  window.removeEventListener("wheel", onWheel);
+
+  window.removeEventListener("mousemove", onMouseMove);
+  window.removeEventListener("mouseup", onMouseUp);
 
   if (material?.uniforms?.uImageAtlas?.value) {
     material.uniforms.uImageAtlas.value.dispose();
