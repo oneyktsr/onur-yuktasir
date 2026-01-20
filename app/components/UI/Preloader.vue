@@ -38,20 +38,12 @@
         <div class="col-span-2 md:col-span-2"></div>
 
         <div
-          class="flex col-start-3 col-span-2 md:col-start-4 md:col-span-6 relative h-[1px] overflow-hidden items-center opacity-30"
+          class="flex col-start-3 col-span-2 md:col-start-6 md:col-span-7 relative h-[1px] overflow-hidden items-center opacity-30"
         >
           <div
             ref="lineRef"
             class="absolute top-0 left-0 h-full w-full bg-[#e4e0db] origin-left scale-x-0"
           ></div>
-        </div>
-
-        <div class="hidden text-right md:block md:col-start-12 md:col-span-1">
-          <span
-            ref="counterRef"
-            class="font-normal opacity-0 text-small tabular-nums"
-            >0</span
-          >
         </div>
       </div>
     </div>
@@ -64,7 +56,7 @@ import { onMounted, ref } from "vue";
 const curtainRef = ref<HTMLElement | null>(null);
 const brandRef = ref<HTMLElement | null>(null);
 const lineRef = ref<HTMLElement | null>(null);
-const counterRef = ref<HTMLElement | null>(null);
+// counterRef kaldırıldı
 
 const { $gsap, $SplitText } = useNuxtApp();
 const route = useRoute();
@@ -75,36 +67,36 @@ const isLoaded = useState("isLoaded");
 const isMenuOpen = useState<boolean>("isMenuOpen");
 const pendingRoute = useState<string | null>("pendingRoute");
 
-// LOGO TIKLAMA MANTIĞI (GARANTİLİ YÖNTEM)
+// LOGO TIKLAMA MANTIĞI (Aynen Korundu)
 const handleLogoClick = () => {
-  // 1. Eğer Mobil Menü Açıksa:
   if (isMenuOpen.value) {
-    // Eğer zaten anasayfada DEĞİLSEK, rotayı kaydet.
     if (route.path !== "/") {
       pendingRoute.value = "/";
     }
-    // Menüyü kapat (Bu işlem Header.vue'daki animasyonu tetikler)
-    // Animasyon bitince pendingRoute varsa oraya gidilir.
     isMenuOpen.value = false;
-  }
-  // 2. Menü Kapalıysa:
-  else {
-    // Direkt git (Eğer anasayfada değilsek)
+  } else {
     if (route.path !== "/") {
       router.push("/");
     }
   }
 };
 
-// PRELOADER ANİMASYONLARI (Aynı)
+// PRELOADER ANİMASYONLARI
 onMounted(() => {
-  if (!$gsap || !$SplitText) return;
+  if (!$gsap || !$SplitText || !brandRef.value) return;
 
   const split = new $SplitText(brandRef.value, { type: "chars" });
 
-  $gsap.set(brandRef.value, { opacity: 1, y: "45vh", scale: 1.2 });
+  // --- DİNAMİK HİZALAMA (Revize) ---
+  // Logonun ve Çizginin (perde ortası) tam çakışması için hesaplama:
+  const logoRect = brandRef.value.getBoundingClientRect();
+  const screenCenterY = window.innerHeight / 2;
+  const logoCenterY = logoRect.top + logoRect.height / 2;
+  const moveY = screenCenterY - logoCenterY;
+
+  // Başlangıç değerleri
+  $gsap.set(brandRef.value, { opacity: 1, y: moveY, scale: 1.2 });
   $gsap.set(split.chars, { opacity: 0 });
-  $gsap.set(counterRef.value, { opacity: 0 });
   $gsap.set(lineRef.value, { transformOrigin: "left center" });
 
   const tl = $gsap.timeline({
@@ -114,6 +106,7 @@ onMounted(() => {
     },
   });
 
+  // 1. Logo Harfleri Belirir
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -121,35 +114,14 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  if (counterRef.value) {
-    tl.to(counterRef.value, { opacity: 1, duration: 0.5 }, "-=0.5");
-  }
-
+  // 2. Çizgi Dolar (Sayaçsız)
   tl.to(
     lineRef.value,
     { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
     "progress",
   );
 
-  if (counterRef.value) {
-    tl.to(
-      counterRef.value,
-      {
-        innerText: 100,
-        duration: 1.5,
-        snap: { innerText: 1 },
-        ease: "power2.inOut",
-        onUpdate: function () {
-          if (counterRef.value)
-            counterRef.value.innerText = Math.ceil(
-              this.targets()[0].innerText,
-            ).toString();
-        },
-      },
-      "progress",
-    );
-  }
-
+  // 3. Çizgi Kaybolur
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,
@@ -157,14 +129,7 @@ onMounted(() => {
     "exit",
   );
 
-  if (counterRef.value) {
-    tl.to(
-      counterRef.value,
-      { opacity: 0, duration: 0.4, ease: "power2.inOut" },
-      "exit",
-    );
-  }
-
+  // 4. Perde ve Logo Yerine Gider
   tl.to(
     curtainRef.value,
     { yPercent: -100, duration: 1.5, ease: "expo.inOut" },
@@ -179,7 +144,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
+/* Sayaç stili kaldırıldı */
 </style>
