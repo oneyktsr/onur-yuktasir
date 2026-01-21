@@ -19,7 +19,6 @@
               ref="topLine"
               class="block w-12 h-[1px] bg-current origin-center will-change-transform"
             ></span>
-
             <span
               ref="bottomLine"
               class="block w-12 h-[1px] bg-current origin-center will-change-transform"
@@ -32,18 +31,10 @@
         <nav
           class="items-center justify-between hidden font-normal leading-none pointer-events-auto lg:flex lg:col-span-3 text-body"
         >
-          <NuxtLink to="/studio" class="transition-opacity hover:opacity-50"
-            >Studio</NuxtLink
-          >
-          <NuxtLink to="/works" class="transition-opacity hover:opacity-50"
-            >Works</NuxtLink
-          >
-          <NuxtLink to="/insights" class="transition-opacity hover:opacity-50"
-            >Insights</NuxtLink
-          >
-          <NuxtLink to="/experience" class="transition-opacity hover:opacity-50"
-            >Experience</NuxtLink
-          >
+          <UILink to="/studio" label="Studio" />
+          <UILink to="/works" label="Works" />
+          <UILink to="/insights" label="Insights" />
+          <UILink to="/experience" label="Experience" />
         </nav>
 
         <div class="hidden lg:block lg:col-span-1"></div>
@@ -51,11 +42,7 @@
         <div
           class="hidden leading-none text-right pointer-events-auto lg:block lg:col-span-1"
         >
-          <NuxtLink
-            to="/contact"
-            class="font-normal transition-opacity text-body hover:opacity-50 whitespace-nowrap"
-            >Let's Talk</NuxtLink
-          >
+          <UILink to="/contact" label="Let's Talk" class="whitespace-nowrap" />
         </div>
       </div>
     </header>
@@ -123,6 +110,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
+import UILink from "~/components/UI/Link.vue"; // Component import edildi
 
 const { $gsap, $SplitText, $ScrollSmoother } = useNuxtApp();
 const router = useRouter();
@@ -205,17 +193,16 @@ const onEnter = (el: Element, done: () => void) => {
   // 1. Perdeyi İndir
   tl.to(el, { yPercent: 0, duration: 1.0, ease: "expo.inOut" });
 
-  // 2. İKON ANİMASYONU (Açılış Bittikten Sonra)
-  // İki çizgiyi ortada birleştirip tek çizgi yapıyoruz.
+  // 2. İKON ANİMASYONU
   if (topLine.value && bottomLine.value) {
     tl.to(
       [topLine.value, bottomLine.value],
       {
-        y: (i) => (i === 0 ? 2.5 : -2.5), // Üstü aşağı, altı yukarı it (gap:4px + 1px height hesabı)
+        y: (i: any) => (i === 0 ? 2.5 : -2.5),
         duration: 0.4,
         ease: "power2.out",
       },
-      "-=0.1", // Perde iner inmez başlasın (akıcılık için çok hafif bindirdik)
+      "-=0.1",
     );
   }
 
@@ -244,14 +231,13 @@ const onLeave = (el: Element, done: () => void) => {
 
   const tl = $gsap.timeline({
     onComplete: () => {
-      // 3. En Son İkonu Düzelt (Menü tamamen kapandıktan sonra)
+      // 3. En Son İkonu Düzelt
       if (topLine.value && bottomLine.value) {
         $gsap.to([topLine.value, bottomLine.value], {
-          y: 0, // Eski yerlerine dönsünler
+          y: 0,
           duration: 0.4,
           ease: "power2.out",
           onComplete: () => {
-            // İkon düzelince route değişimi yap (opsiyonel, daha temiz geçiş için)
             if (pendingRoute.value) {
               router.push(pendingRoute.value);
               pendingRoute.value = null;
@@ -279,7 +265,7 @@ const onLeave = (el: Element, done: () => void) => {
     });
   }
 
-  // 2. Perdeyi Kaldır (İkon hala tek çizgi)
+  // 2. Perdeyi Kaldır
   tl.to(
     el,
     {
