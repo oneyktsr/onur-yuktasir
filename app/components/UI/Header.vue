@@ -13,6 +13,7 @@
           <button
             @click="toggleMenu"
             class="flex flex-col justify-center items-end gap-[4px] w-20 h-6 transition-opacity hover:opacity-50 group"
+            :class="{ 'cursor-wait': isAnimating }"
             aria-label="Toggle Menu"
           >
             <span
@@ -110,7 +111,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import UILink from "~/components/UI/Link.vue"; // Component import edildi
+import UILink from "~/components/UI/Link.vue";
 
 const { $gsap, $SplitText, $ScrollSmoother } = useNuxtApp();
 const router = useRouter();
@@ -121,25 +122,41 @@ const isLoaded = useState("isLoaded");
 const isMenuOpen = useState<boolean>("isMenuOpen", () => false);
 const pendingRoute = useState<string | null>("pendingRoute", () => null);
 
+// ANIMASYON KİLİDİ
+// Menü açılırken veya kapanırken true olur, tıklamayı engeller.
+const isAnimating = ref(false);
+
 const headerRef = ref(null);
 const mobileNavRef = ref(null);
 const mobileFooterRef = ref(null);
 
-// İkon Çizgileri için Refler
 const topLine = ref(null);
 const bottomLine = ref(null);
 
 const toggleMenu = () => {
+  // Eğer animasyon devam ediyorsa, fonksiyonu durdur.
+  if (isAnimating.value) return;
+
+  // Kilidi aktif et
+  isAnimating.value = true;
   isMenuOpen.value = !isMenuOpen.value;
 };
 
 const handleNav = (path: string) => {
+  // Navigasyon sırasında da kilit kontrolü
   if (path === route.path) {
-    isMenuOpen.value = false;
+    if (!isAnimating.value) {
+      isAnimating.value = true;
+      isMenuOpen.value = false;
+    }
     return;
   }
-  pendingRoute.value = path;
-  isMenuOpen.value = false;
+
+  if (!isAnimating.value) {
+    pendingRoute.value = path;
+    isAnimating.value = true;
+    isMenuOpen.value = false;
+  }
 };
 
 // HEADER GİRİŞ (Fade-In)
@@ -164,6 +181,7 @@ watch(isLoaded, (val) => {
 // --- MENÜ AÇILIŞ ANİMASYONU ---
 const onEnter = (el: Element, done: () => void) => {
   if (!$gsap || !$SplitText) {
+    isAnimating.value = false; // Hata durumunda kilidi aç
     done();
     return;
   }
@@ -188,7 +206,13 @@ const onEnter = (el: Element, done: () => void) => {
   $gsap.set(el, { yPercent: -100 });
   $gsap.set(movingLines, { yPercent: 100 });
 
-  const tl = $gsap.timeline({ onComplete: done });
+  const tl = $gsap.timeline({
+    onComplete: () => {
+      // Animasyon tamamen bitti, kilidi aç.
+      isAnimating.value = false;
+      done();
+    },
+  });
 
   // 1. Perdeyi İndir
   tl.to(el, { yPercent: 0, duration: 1.0, ease: "expo.inOut" });
@@ -223,6 +247,7 @@ const onEnter = (el: Element, done: () => void) => {
 // --- MENÜ KAPANIŞ ANİMASYONU ---
 const onLeave = (el: Element, done: () => void) => {
   if (!$gsap) {
+    isAnimating.value = false;
     done();
     return;
   }
@@ -231,7 +256,7 @@ const onLeave = (el: Element, done: () => void) => {
 
   const tl = $gsap.timeline({
     onComplete: () => {
-      // 3. En Son İkonu Düzelt
+      // 3. En Son İkonu Düzelt ve Kilidi Aç
       if (topLine.value && bottomLine.value) {
         $gsap.to([topLine.value, bottomLine.value], {
           y: 0,
@@ -242,6 +267,8 @@ const onLeave = (el: Element, done: () => void) => {
               router.push(pendingRoute.value);
               pendingRoute.value = null;
             }
+            // KİLİDİ AÇ
+            isAnimating.value = false;
             done();
           },
         });
@@ -250,6 +277,8 @@ const onLeave = (el: Element, done: () => void) => {
           router.push(pendingRoute.value);
           pendingRoute.value = null;
         }
+        // KİLİDİ AÇ
+        isAnimating.value = false;
         done();
       }
     },
