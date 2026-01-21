@@ -1,23 +1,20 @@
 /* assets/css/main.css */
 
-/* 1. Font Tanımları (GÜNCELLENDİ) */
-
-/* Extra Light / Thin (Eski 300 yerine 200) */
+/* 1. Font Tanımları */
 @font-face {
   font-family: "TWKLausanne";
   src: url("~/assets/fonts/TWKLausanne-200.woff2") format("woff2");
   font-weight: 200;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
-/* Regular Alternatifi (Eski 400 yerine 250) */
 @font-face {
   font-family: "TWKLausanne";
   src: url("~/assets/fonts/TWKLausanne-250.woff2") format("woff2");
   font-weight: 250;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 /* 2. Tailwind */
@@ -45,6 +42,11 @@ body {
 
   /* Varsayılan Font Ağırlığı: 250 */
   font-weight: 250;
+
+  /* Font Render İyileştirmeleri */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* 4. GSAP WRAPPER */
@@ -77,6 +79,7 @@ video {
   display: block;
 }
 
+/* Sayfa Geçişleri */
 .page-enter-active,
 .page-leave-active {
   transition: opacity 0.6s ease-in-out;
