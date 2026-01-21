@@ -56,7 +56,6 @@ import { onMounted, ref } from "vue";
 const curtainRef = ref<HTMLElement | null>(null);
 const brandRef = ref<HTMLElement | null>(null);
 const lineRef = ref<HTMLElement | null>(null);
-// counterRef kaldırıldı
 
 const { $gsap, $SplitText } = useNuxtApp();
 const route = useRoute();
@@ -67,7 +66,7 @@ const isLoaded = useState("isLoaded");
 const isMenuOpen = useState<boolean>("isMenuOpen");
 const pendingRoute = useState<string | null>("pendingRoute");
 
-// LOGO TIKLAMA MANTIĞI (Aynen Korundu)
+// LOGO TIKLAMA MANTIĞI
 const handleLogoClick = () => {
   if (isMenuOpen.value) {
     if (route.path !== "/") {
@@ -87,15 +86,20 @@ onMounted(() => {
 
   const split = new $SplitText(brandRef.value, { type: "chars" });
 
-  // --- DİNAMİK HİZALAMA (Revize) ---
-  // Logonun ve Çizginin (perde ortası) tam çakışması için hesaplama:
+  // --- DİNAMİK HİZALAMA VE SCALE AYARI ---
   const logoRect = brandRef.value.getBoundingClientRect();
   const screenCenterY = window.innerHeight / 2;
   const logoCenterY = logoRect.top + logoRect.height / 2;
   const moveY = screenCenterY - logoCenterY;
 
-  // Başlangıç değerleri
-  $gsap.set(brandRef.value, { opacity: 1, y: moveY, scale: 1.2 });
+  // Mobil kontrolü: 768px altıysa mobil kabul et
+  const isMobile = window.innerWidth < 768;
+
+  // Scale ayarı: Mobilde 1.45 (biraz daha büyük), Masaüstünde 1.2
+  const initialScale = isMobile ? 1.45 : 1.2;
+
+  // Başlangıç değerleri (scale dinamikleştirildi)
+  $gsap.set(brandRef.value, { opacity: 1, y: moveY, scale: initialScale });
   $gsap.set(split.chars, { opacity: 0 });
   $gsap.set(lineRef.value, { transformOrigin: "left center" });
 
@@ -114,7 +118,7 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  // 2. Çizgi Dolar (Sayaçsız)
+  // 2. Çizgi Dolar
   tl.to(
     lineRef.value,
     { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
@@ -129,7 +133,7 @@ onMounted(() => {
     "exit",
   );
 
-  // 4. Perde ve Logo Yerine Gider
+  // 4. Perde ve Logo Yerine Gider (Scale 1'e döner)
   tl.to(
     curtainRef.value,
     { yPercent: -100, duration: 1.5, ease: "expo.inOut" },
@@ -143,6 +147,4 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-/* Sayaç stili kaldırıldı */
-</style>
+<style scoped></style>

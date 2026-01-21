@@ -12,17 +12,17 @@
         >
           <button
             @click="toggleMenu"
-            class="flex flex-col justify-center items-end gap-[6px] w-20 h-6 transition-opacity hover:opacity-50 group"
+            class="flex flex-col justify-center items-end gap-[4px] w-20 h-6 transition-opacity hover:opacity-50 group"
             aria-label="Toggle Menu"
           >
             <span
-              class="block w-16 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
-              :class="isMenuOpen ? 'translate-y-[3.5px] rotate-45' : ''"
+              class="block w-12 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
+              :class="isMenuOpen ? 'translate-y-[2.5px] rotate-45' : ''"
             ></span>
 
             <span
-              class="block w-16 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
-              :class="isMenuOpen ? '-translate-y-[3.5px] -rotate-45' : ''"
+              class="block w-12 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
+              :class="isMenuOpen ? '-translate-y-[2.5px] -rotate-45' : ''"
             ></span>
           </button>
         </div>
