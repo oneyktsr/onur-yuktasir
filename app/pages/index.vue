@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div
-      class="w-full min-h-screen bg-[#e4e0db] text-custom-dark overflow-hidden"
-    >
+    <div class="w-full bg-[#e4e0db] text-custom-dark overflow-hidden">
       <section
         ref="heroSectionRef"
         class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)] md:pt-[calc(theme('spacing.layout')*2.2)]"
@@ -43,7 +41,7 @@
         </div>
       </section>
 
-      <section class="w-full mb-layout">
+      <section class="w-full">
         <div
           ref="videoContainerRef"
           class="w-full h-[100svh] bg-black relative overflow-hidden group cursor-pointer"
@@ -69,8 +67,10 @@
           </div>
         </div>
       </section>
+    </div>
 
-      <section class="w-full mb-section px-layout">
+    <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
+      <section class="w-full mb-section px-layout pt-layout">
         <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
           <div class="col-span-4 md:col-start-4 md:col-span-9">
             <UITextReveal
@@ -92,7 +92,7 @@
 
       <section class="w-full mb-section px-layout">
         <div
-          class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-12 gap-x-md border-custom-dark/10"
+          class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-12 gap-x-md border-custom-light/10"
         >
           <div class="col-span-2 md:col-span-6">
             <UITextReveal
@@ -117,7 +117,7 @@
                   class="absolute inset-0 bg-neutral-800/10 mix-blend-multiply"
                 ></div>
               </div>
-              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+              <div class="flex flex-col pt-4 border-t border-custom-light/10">
                 <UITextReveal
                   tag="h3"
                   type="lines"
@@ -137,7 +137,7 @@
               <div
                 class="w-full mb-6 transition-opacity aspect-video bg-neutral-800 group-hover:opacity-90"
               ></div>
-              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+              <div class="flex flex-col pt-4 border-t border-custom-light/10">
                 <UITextReveal
                   tag="h3"
                   type="lines"
@@ -162,7 +162,7 @@
               <div
                 class="w-full mb-6 transition-opacity aspect-square bg-neutral-600 group-hover:opacity-90"
               ></div>
-              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+              <div class="flex flex-col pt-4 border-t border-custom-light/10">
                 <UITextReveal
                   tag="h3"
                   type="lines"
@@ -182,7 +182,7 @@
               <div
                 class="w-full aspect-[3/4] bg-neutral-500 mb-6 group-hover:opacity-90 transition-opacity"
               ></div>
-              <div class="flex flex-col pt-4 border-t border-custom-dark/10">
+              <div class="flex flex-col pt-4 border-t border-custom-light/10">
                 <UITextReveal
                   tag="h3"
                   type="lines"
@@ -203,7 +203,7 @@
       </section>
 
       <section
-        class="grid w-full grid-cols-4 border-t px-layout py-section border-custom-dark/10 md:grid-cols-12 gap-x-md"
+        class="grid w-full grid-cols-4 border-t px-layout py-section border-custom-light/10 md:grid-cols-12 gap-x-md"
       >
         <div class="col-span-4 text-center md:col-start-2 md:col-span-10">
           <UITextReveal
@@ -217,9 +217,7 @@
         </div>
       </section>
 
-      <footer
-        class="w-full bg-custom-dark text-[#e4e0db] px-layout py-section overflow-hidden"
-      >
+      <footer class="w-full overflow-hidden px-layout py-section">
         <div
           class="grid grid-cols-4 md:grid-cols-12 gap-x-md h-[50vh] content-between"
         >
