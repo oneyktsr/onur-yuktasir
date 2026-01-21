@@ -81,7 +81,9 @@
         <div
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
         >
-          <div class="col-span-4 mb-layout md:col-span-2 md:mb-0 lg:col-span-3">
+          <div
+            class="col-span-4 mb-[calc(theme('spacing.layout')*2)] md:col-span-2 md:mb-0 lg:col-span-3"
+          >
             <UITextReveal tag="span" type="lines" class="font-normal text-body">
               Passion
             </UITextReveal>
@@ -107,7 +109,7 @@
         </div>
 
         <div
-          class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md mt-layout"
+          class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md mt-[calc(theme('spacing.layout')*2)]"
         >
           <div
             class="col-span-4 md:col-start-5 md:col-span-3 lg:col-start-8 lg:col-span-3"
