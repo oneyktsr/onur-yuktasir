@@ -43,7 +43,7 @@
         </div>
       </section>
 
-      <section class="w-full mb-section">
+      <section class="w-full mb-layout">
         <div
           ref="videoContainerRef"
           class="w-full h-[100svh] bg-black relative overflow-hidden group cursor-pointer"
