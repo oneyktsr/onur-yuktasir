@@ -33,7 +33,7 @@
           </div>
 
           <div
-            class="order-1 col-span-4 mb-6 text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
+            class="order-1 col-span-4 mb-[calc(theme('spacing.layout')*2)] text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
           >
             <UITextReveal
               tag="p"
@@ -85,7 +85,6 @@
             class="col-span-4 mb-[calc(theme('spacing.layout')*2)] md:col-span-2 md:mb-0 lg:col-span-3 flex items-center gap-x-3 h-fit"
           >
             <div class="w-2 h-2 rounded-full bg-custom-light shrink-0"></div>
-
             <UITextReveal tag="span" type="lines" class="font-normal text-body">
               Passion
             </UITextReveal>
