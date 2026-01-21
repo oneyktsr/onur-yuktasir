@@ -85,7 +85,11 @@
             class="col-span-4 mb-[calc(theme('spacing.layout')*2)] md:col-span-2 md:mb-0 lg:col-span-3 flex items-center gap-x-3 h-fit"
           >
             <div class="w-2 h-2 rounded-full bg-custom-light shrink-0"></div>
-            <UITextReveal tag="span" type="lines" class="font-normal text-body">
+            <UITextReveal
+              tag="span"
+              type="lines"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal"
+            >
               Passion
             </UITextReveal>
           </div>
@@ -115,7 +119,11 @@
           <div
             class="col-span-4 md:col-start-5 md:col-span-3 lg:col-start-8 lg:col-span-3"
           >
-            <UITextReveal tag="p" type="lines" class="font-normal text-body">
+            <UITextReveal
+              tag="p"
+              type="lines"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal"
+            >
               It’s a passion for creating the next generation of digital
               experiences. Every project is an opportunity to explore new ideas,
               push boundaries, and create solutions that truly connect with
