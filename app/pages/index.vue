@@ -5,8 +5,13 @@
         ref="heroSectionRef"
         class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)] md:pt-[calc(theme('spacing.layout')*2.2)]"
       >
-        <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
-          <div ref="heroTitleRef" class="col-span-4 md:col-span-8">
+        <div
+          class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
+        >
+          <div
+            ref="heroTitleRef"
+            class="col-span-4 md:col-span-6 lg:col-span-8"
+          >
             <UITextReveal
               tag="h1"
               type="lines"
@@ -18,15 +23,17 @@
           </div>
         </div>
 
-        <div class="grid items-end w-full grid-cols-4 md:grid-cols-12 gap-x-md">
+        <div
+          class="grid items-end w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
+        >
           <div
-            class="flex justify-start order-2 col-span-4 md:col-span-4 md:mb-0 md:order-1"
+            class="flex justify-start order-2 col-span-4 md:col-span-4 lg:col-span-4 md:mb-0 md:order-1"
           >
             <UIButton to="/studio" label="Learn More About Us" mode="light" />
           </div>
 
           <div
-            class="order-1 col-span-4 mb-6 text-left md:col-span-5 md:col-start-8 md:mb-0 md:order-2"
+            class="order-1 col-span-4 mb-6 text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
           >
             <UITextReveal
               tag="p"
@@ -71,21 +78,25 @@
 
     <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
       <section class="w-full mb-section px-layout pt-layout">
-        <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
-          <div class="col-span-4 mb-layout md:col-span-3 md:mb-0">
+        <div
+          class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
+        >
+          <div class="col-span-4 mb-layout md:col-span-2 md:mb-0 lg:col-span-3">
             <UITextReveal tag="span" type="lines" class="font-normal text-body">
               Passion
             </UITextReveal>
           </div>
 
-          <div class="col-span-4 md:col-start-4 md:col-span-9">
+          <div
+            class="col-span-4 md:col-start-3 md:col-span-6 lg:col-start-4 lg:col-span-9"
+          >
             <UITextReveal
               tag="p"
               type="lines"
               class="text-h1 font-normal leading-[1.1] tracking-tighter pb-2"
             >
               <span
-                class="float-left w-[calc((100%/9)*2)] h-[10px] hidden md:block"
+                class="float-left h-[10px] hidden md:block md:w-[calc(100%/6)] lg:w-[calc((100%/9)*2)]"
                 aria-hidden="true"
               ></span>
 
@@ -94,13 +105,28 @@
             </UITextReveal>
           </div>
         </div>
+
+        <div
+          class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md mt-layout"
+        >
+          <div
+            class="col-span-4 md:col-start-5 md:col-span-3 lg:col-start-8 lg:col-span-3"
+          >
+            <UITextReveal tag="p" type="lines" class="font-normal text-body">
+              It’s a passion for creating the next generation of digital
+              experiences. Every project is an opportunity to explore new ideas,
+              push boundaries, and create solutions that truly connect with
+              audiences.
+            </UITextReveal>
+          </div>
+        </div>
       </section>
 
       <section class="w-full mb-section px-layout">
         <div
-          class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-12 gap-x-md border-custom-light/10"
+          class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-8 lg:grid-cols-12 gap-x-md border-custom-light/10"
         >
-          <div class="col-span-2 md:col-span-6">
+          <div class="col-span-2 md:col-span-4 lg:col-span-6">
             <UITextReveal
               tag="h2"
               type="lines"
@@ -108,13 +134,17 @@
               >Selected Works</UITextReveal
             >
           </div>
-          <div class="col-span-2 text-right md:col-span-6">
+          <div class="col-span-2 text-right md:col-span-4 lg:col-span-6">
             <span class="opacity-50 text-small">(01 — 04)</span>
           </div>
         </div>
 
-        <div class="grid grid-cols-4 md:grid-cols-12 gap-x-md gap-y-section">
-          <div class="flex flex-col col-span-4 md:col-span-6 gap-y-section">
+        <div
+          class="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md gap-y-section"
+        >
+          <div
+            class="flex flex-col col-span-4 md:col-span-4 lg:col-span-6 gap-y-section"
+          >
             <div class="block w-full cursor-pointer group" data-speed="1.05">
               <div
                 class="w-full aspect-[4/5] bg-neutral-400 mb-6 group-hover:opacity-90 transition-opacity relative overflow-hidden"
@@ -162,7 +192,7 @@
           </div>
 
           <div
-            class="flex flex-col col-span-4 md:col-span-6 gap-y-section md:pt-32"
+            class="flex flex-col col-span-4 md:col-span-4 lg:col-span-6 gap-y-section md:pt-32"
           >
             <div class="block w-full cursor-pointer group" data-speed="0.95">
               <div
@@ -209,9 +239,11 @@
       </section>
 
       <section
-        class="grid w-full grid-cols-4 border-t px-layout py-section border-custom-light/10 md:grid-cols-12 gap-x-md"
+        class="grid w-full grid-cols-4 border-t px-layout py-section border-custom-light/10 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
       >
-        <div class="col-span-4 text-center md:col-start-2 md:col-span-10">
+        <div
+          class="col-span-4 text-center md:col-start-2 md:col-span-6 lg:col-start-2 lg:col-span-10"
+        >
           <UITextReveal
             tag="p"
             type="lines"
@@ -225,9 +257,9 @@
 
       <footer class="w-full overflow-hidden px-layout py-section">
         <div
-          class="grid grid-cols-4 md:grid-cols-12 gap-x-md h-[50vh] content-between"
+          class="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md h-[50vh] content-between"
         >
-          <div class="col-span-4 md:col-span-8">
+          <div class="col-span-4 md:col-span-6 lg:col-span-8">
             <UITextReveal
               tag="h2"
               type="lines"
@@ -238,7 +270,7 @@
           </div>
 
           <div
-            class="flex items-start justify-start col-span-4 mt-8 md:col-span-4 md:justify-end md:mt-0"
+            class="flex items-start justify-start col-span-4 mt-8 md:col-span-2 md:justify-end md:mt-0 lg:col-span-4"
           >
             <button
               class="group border border-[#e4e0db]/20 px-10 py-5 rounded-full hover:bg-[#e4e0db] hover:text-custom-dark transition-all duration-300"
@@ -251,7 +283,7 @@
           </div>
 
           <div
-            class="col-span-4 md:col-span-12 flex justify-between items-end opacity-50 text-small uppercase border-t border-[#e4e0db]/20 pt-8 mt-auto"
+            class="col-span-4 md:col-span-8 lg:col-span-12 flex justify-between items-end opacity-50 text-small uppercase border-t border-[#e4e0db]/20 pt-8 mt-auto"
           >
             <div class="flex flex-col gap-1">
               <span>© 2026 Studio</span>
