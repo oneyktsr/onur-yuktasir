@@ -128,6 +128,11 @@
               experiences. Every project is an opportunity to explore new ideas,
               push boundaries, and create solutions that truly connect with
               audiences.
+              <br /><br />
+              By combining creativity, technology, and strategic thinking, we
+              deliver work that is not only visually compelling but also
+              meaningful and effective, helping brands grow and resonate in an
+              ever-changing digital landscape.
             </UITextReveal>
           </div>
         </div>
