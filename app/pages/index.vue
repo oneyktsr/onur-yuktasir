@@ -30,7 +30,7 @@
           >
             <NuxtLink
               to="/studio"
-              class="inline-flex items-center font-normal transition-opacity group text-body hover:opacity-50 2xl:text-xl"
+              class="inline-flex items-center font-normal transition-opacity group text-body hover:opacity-50"
             >
               <span>Learn More About Us</span>
             </NuxtLink>
@@ -43,10 +43,10 @@
               tag="p"
               :delay="0.2"
               type="lines"
-              class="text-h4 font-normal md:font-light leading-[1.1] tracking-tight 2xl:text-3xl md:max-w-[32ch]"
+              class="text-h4 font-normal leading-[1.1] tracking-tight"
             >
               We create digital experiences that inspire engagement and deliver
-              measurable impact for forward — thinking brands and businesses.
+              measurable impact for forward-thinking brands and businesses.
             </UITextReveal>
           </div>
         </div>

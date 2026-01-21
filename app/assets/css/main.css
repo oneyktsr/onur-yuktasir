@@ -33,14 +33,10 @@ body {
   /* ScrollSmoother için GEREKLİ */
   overflow: hidden !important;
 
-  /* Sitenin arka plan rengi */
   background-color: #e4e0db;
-
-  /* Mobil tarayıcı barı değişse bile tam ekran kalmasını sağlar */
   min-height: 100vh;
   min-height: 100dvh;
 
-  /* Varsayılan Font Ağırlığı: 250 */
   font-weight: 250;
 
   /* Font Render İyileştirmeleri */
