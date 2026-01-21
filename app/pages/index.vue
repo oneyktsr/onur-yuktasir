@@ -24,12 +24,7 @@
           <div
             class="flex justify-start order-2 col-span-4 md:col-span-4 md:mb-0 md:order-1"
           >
-            <NuxtLink
-              to="/studio"
-              class="inline-flex items-center font-normal transition-opacity group text-body hover:opacity-50"
-            >
-              <span>Learn More About Us</span>
-            </NuxtLink>
+            <UIButton to="/studio" label="Learn More About Us" mode="light" />
           </div>
 
           <div
@@ -250,6 +245,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
+// UIButton import ediyoruz
+import UIButton from "~/components/UI/Button.vue";
 import showreelVideo from "~/assets/showreel/2024-04-08T11-54-16.659Z-reel-teaser.mp4";
 
 const { $gsap, $ScrollTrigger } = useNuxtApp();
@@ -264,7 +261,6 @@ let ctx: any;
 onMounted(async () => {
   if (!$gsap || !$ScrollTrigger) return;
 
-  // Fontların yüklenmesini bekle (Layout kaymasını önlemek için)
   await document.fonts.ready;
 
   let mm = $gsap.matchMedia();
@@ -278,14 +274,10 @@ onMounted(async () => {
       (context: any) => {
         let { isMobile } = context.conditions;
 
-        // --- AYARLAR ---
         const titleLag = isMobile ? 300 : 200;
         const videoScale = isMobile ? 1.7 : 1.5;
         const videoMove = isMobile ? 45 : 35;
 
-        // --- UYGULAMA ---
-
-        // A) Title Animation
         if (heroTitleRef.value && heroSectionRef.value) {
           $gsap.to(heroTitleRef.value, {
             yPercent: titleLag,
@@ -299,7 +291,6 @@ onMounted(async () => {
           });
         }
 
-        // B) Video Animation
         if (videoContainerRef.value && videoRef.value) {
           $gsap.fromTo(
             videoRef.value,

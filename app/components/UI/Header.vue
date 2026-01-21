@@ -198,7 +198,7 @@ const onEnter = (el: Element, done: () => void) => {
     tl.to(
       [topLine.value, bottomLine.value],
       {
-        y: (i: any) => (i === 0 ? 2.5 : -2.5),
+        y: (i: number) => (i === 0 ? 2.5 : -2.5),
         duration: 0.4,
         ease: "power2.out",
       },
