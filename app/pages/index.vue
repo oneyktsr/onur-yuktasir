@@ -30,7 +30,7 @@
           >
             <NuxtLink
               to="/studio"
-              class="inline-flex items-center font-normal transition-opacity group text-body hover:opacity-50"
+              class="inline-flex items-center font-normal transition-opacity group text-body hover:opacity-50 2xl:text-xl"
             >
               <span>Learn More About Us</span>
             </NuxtLink>
@@ -43,10 +43,10 @@
               tag="p"
               :delay="0.2"
               type="lines"
-              class="text-h4 font-normal md:font-light leading-[1.1] tracking-tight"
+              class="text-h4 font-normal md:font-light leading-[1.1] tracking-tight 2xl:text-3xl md:max-w-[32ch]"
             >
               We create digital experiences that inspire engagement and deliver
-              measurable impact for forward-thinking brands and businesses.
+              measurable impact for forward — thinking brands and businesses.
             </UITextReveal>
           </div>
         </div>
@@ -254,7 +254,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-// GÜNCELLENEN KISIM: Video dosyasını import ediyoruz
 import showreelVideo from "~/assets/showreel/2024-04-08T11-54-16.659Z-reel-teaser.mp4";
 
 const { $gsap, $ScrollTrigger } = useNuxtApp();
