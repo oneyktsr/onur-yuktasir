@@ -82,8 +82,10 @@
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
         >
           <div
-            class="col-span-4 mb-[calc(theme('spacing.layout')*2)] md:col-span-2 md:mb-0 lg:col-span-3"
+            class="col-span-4 mb-[calc(theme('spacing.layout')*2)] md:col-span-2 md:mb-0 lg:col-span-3 flex items-center gap-x-3 h-fit"
           >
+            <div class="w-2 h-2 rounded-full bg-custom-light shrink-0"></div>
+
             <UITextReveal tag="span" type="lines" class="font-normal text-body">
               Passion
             </UITextReveal>
