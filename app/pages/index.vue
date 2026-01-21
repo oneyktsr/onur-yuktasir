@@ -11,7 +11,7 @@
           <div
             ref="heroTitleRef"
             class="col-span-4 md:col-span-8"
-            data-speed="0.95"
+            data-speed="0.85"
           >
             <UITextReveal
               tag="h1"
