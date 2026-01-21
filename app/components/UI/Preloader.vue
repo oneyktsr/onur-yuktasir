@@ -86,19 +86,22 @@ onMounted(() => {
 
   const split = new $SplitText(brandRef.value, { type: "chars" });
 
-  // --- DİNAMİK HİZALAMA VE SCALE AYARI ---
   const logoRect = brandRef.value.getBoundingClientRect();
   const screenCenterY = window.innerHeight / 2;
   const logoCenterY = logoRect.top + logoRect.height / 2;
   const moveY = screenCenterY - logoCenterY;
 
-  // Mobil kontrolü: 768px altıysa mobil kabul et
+  // --- MOBİL VE SCALE AYARLARI ---
   const isMobile = window.innerWidth < 768;
 
-  // Scale ayarı: Mobilde 1.45 (biraz daha büyük), Masaüstünde 1.2
-  const initialScale = isMobile ? 1.45 : 1.2;
+  // 1. Başlangıç Boyutu (Perde üstündeyken - ZOOM OUT ETKİSİ İÇİN BÜYÜTÜLDÜ)
+  // Mobilde 1.8, Masaüstünde 1.5 ile başlıyor.
+  const initialScale = isMobile ? 1.8 : 1.5;
 
-  // Başlangıç değerleri (scale dinamikleştirildi)
+  // 2. Bitiş Boyutu (Yerine oturduğunda)
+  // Mobilde 1.15 (%15 büyük kalır), Masaüstünde 1.0 (Orijinal).
+  const finalScale = isMobile ? 1.15 : 1.0;
+
   $gsap.set(brandRef.value, { opacity: 1, y: moveY, scale: initialScale });
   $gsap.set(split.chars, { opacity: 0 });
   $gsap.set(lineRef.value, { transformOrigin: "left center" });
@@ -110,7 +113,7 @@ onMounted(() => {
     },
   });
 
-  // 1. Logo Harfleri Belirir
+  // Animasyon Adımları
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -118,14 +121,12 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  // 2. Çizgi Dolar
   tl.to(
     lineRef.value,
     { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
     "progress",
   );
 
-  // 3. Çizgi Kaybolur
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,
@@ -133,15 +134,16 @@ onMounted(() => {
     "exit",
   );
 
-  // 4. Perde ve Logo Yerine Gider (Scale 1'e döner)
   tl.to(
     curtainRef.value,
     { yPercent: -100, duration: 1.5, ease: "expo.inOut" },
     "reveal",
   );
+
+  // LOGO YERLEŞİMİ (Küçülerek yerine oturma)
   tl.to(
     brandRef.value,
-    { y: 0, scale: 1, duration: 1.5, ease: "expo.inOut" },
+    { y: 0, scale: finalScale, duration: 1.5, ease: "expo.inOut" },
     "reveal",
   );
 });
