@@ -12,7 +12,7 @@
             <UITextReveal
               tag="h1"
               type="lines"
-              class="text-display font-normal leading-[0.85] tracking-tighter -ml-[0.05em]"
+              class="text-display font-normal leading-[1.0] tracking-tighter -ml-[0.05em] pb-1"
             >
               Create. Connect. <br />
               Cultivate.
@@ -34,7 +34,7 @@
               tag="p"
               :delay="0.2"
               type="lines"
-              class="text-h4 font-normal leading-[1.1] tracking-tight"
+              class="text-h4 font-normal leading-[1.1] tracking-tight pb-1"
             >
               We create digital experiences that inspire engagement and deliver
               measurable impact for forward-thinking brands and businesses.
@@ -62,9 +62,29 @@
             <UITextReveal
               tag="span"
               type="lines"
-              class="text-[#e4e0db] text-h1 uppercase tracking-tighter mix-blend-difference"
+              class="text-[#e4e0db] text-h1 uppercase tracking-tighter mix-blend-difference pb-1"
             >
               Play Reel
+            </UITextReveal>
+          </div>
+        </div>
+      </section>
+
+      <section class="w-full mb-section px-layout">
+        <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
+          <div class="col-span-4 md:col-start-4 md:col-span-9">
+            <UITextReveal
+              tag="p"
+              type="lines"
+              class="text-h1 font-normal leading-[1.0] tracking-tighter pb-2"
+            >
+              <span
+                class="float-left w-[calc((100%/9)*2)] h-[10px] hidden md:block"
+                aria-hidden="true"
+              ></span>
+
+              We're a visionary team producing innovative work in design &
+              technology. For us, this is more than just work.
             </UITextReveal>
           </div>
         </div>
@@ -101,7 +121,7 @@
                 <UITextReveal
                   tag="h3"
                   type="lines"
-                  class="mb-2 font-normal leading-none text-h2"
+                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
                   >Aesop Signature</UITextReveal
                 >
                 <UITextReveal
@@ -121,7 +141,7 @@
                 <UITextReveal
                   tag="h3"
                   type="lines"
-                  class="mb-2 font-normal leading-none text-h2"
+                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
                   >Muji Concept</UITextReveal
                 >
                 <UITextReveal
@@ -146,7 +166,7 @@
                 <UITextReveal
                   tag="h3"
                   type="lines"
-                  class="mb-2 font-normal leading-none text-h2"
+                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
                   >Braun Archive</UITextReveal
                 >
                 <UITextReveal
@@ -166,7 +186,7 @@
                 <UITextReveal
                   tag="h3"
                   type="lines"
-                  class="mb-2 font-normal leading-none text-h2"
+                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
                   >Dieter Rams</UITextReveal
                 >
                 <UITextReveal
@@ -189,7 +209,7 @@
           <UITextReveal
             tag="p"
             type="lines"
-            class="text-h1 font-light leading-[1.1] tracking-tight"
+            class="text-h1 font-normal leading-[0.96] tracking-tighter pb-2"
             data-speed="0.95"
           >
             "Good design is as little design as possible."
@@ -245,7 +265,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-// UIButton import ediyoruz
 import UIButton from "~/components/UI/Button.vue";
 import showreelVideo from "~/assets/showreel/2024-04-08T11-54-16.659Z-reel-teaser.mp4";
 

@@ -30,16 +30,17 @@ body {
   margin: 0;
   padding: 0 !important;
 
-  /* ScrollSmoother için GEREKLİ */
+  /* ScrollSmoother için KRİTİK */
   overflow: hidden !important;
 
   background-color: #e4e0db;
   min-height: 100vh;
   min-height: 100dvh;
 
+  /* Varsayılan Font Ağırlığı */
   font-weight: 250;
 
-  /* Font Render İyileştirmeleri */
+  /* Font Render İyileştirmeleri (Mac/Windows farkını azaltır) */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -75,7 +76,7 @@ video {
   display: block;
 }
 
-/* Sayfa Geçişleri */
+/* 5. Sayfa Geçişleri */
 .page-enter-active,
 .page-leave-active {
   transition: opacity 0.6s ease-in-out;
@@ -83,4 +84,25 @@ video {
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
+}
+
+/* 6. TEXT REVEAL DESCENDER FIX (GLOBAL) */
+/* Bu kod, UITextReveal bileşenindeki GSAP SplitText tarafından
+   oluşturulan satırların (line-inner) altına görünmez bir pay bırakır.
+   Böylece g, y, j, p harflerinin kuyrukları maske (overflow:hidden)
+   tarafından kesilmez. Negatif margin ile satır tekrar yerine oturtulur.
+*/
+.line-wrapper {
+  overflow: hidden !important;
+  padding-bottom: 0.14em !important; /* Sadece kuyruk ucu kadar pay */
+  margin-bottom: -0.14em !important; /* Satırları tekrar sıkılaştır */
+  display: block;
+  width: 100%;
+}
+
+.line-inner {
+  display: block;
+  will-change: transform;
+  /* Inner padding'e gerek kalmadı, wrapper kontrol ediyor */
+  padding: 0 !important;
 }
