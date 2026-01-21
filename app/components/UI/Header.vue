@@ -16,13 +16,13 @@
             aria-label="Toggle Menu"
           >
             <span
-              class="block w-12 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
-              :class="isMenuOpen ? 'translate-y-[2.5px] rotate-45' : ''"
+              ref="topLine"
+              class="block w-12 h-[1px] bg-current origin-center will-change-transform"
             ></span>
 
             <span
-              class="block w-12 h-[1px] bg-current transition-transform duration-300 ease-out origin-center"
-              :class="isMenuOpen ? '-translate-y-[2.5px] -rotate-45' : ''"
+              ref="bottomLine"
+              class="block w-12 h-[1px] bg-current origin-center will-change-transform"
             ></span>
           </button>
         </div>
@@ -53,7 +53,7 @@
         >
           <NuxtLink
             to="/contact"
-            class="transition-opacity text-body hover:opacity-50 whitespace-nowrap"
+            class="font-normal transition-opacity text-body hover:opacity-50 whitespace-nowrap"
             >Let's Talk</NuxtLink
           >
         </div>
@@ -137,6 +137,10 @@ const headerRef = ref(null);
 const mobileNavRef = ref(null);
 const mobileFooterRef = ref(null);
 
+// İkon Çizgileri için Refler
+const topLine = ref(null);
+const bottomLine = ref(null);
+
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
@@ -169,7 +173,7 @@ watch(isLoaded, (val) => {
   }
 });
 
-// --- MOBİL MENÜ ANİMASYONLARI ---
+// --- MENÜ AÇILIŞ ANİMASYONU ---
 const onEnter = (el: Element, done: () => void) => {
   if (!$gsap || !$SplitText) {
     done();
@@ -197,16 +201,39 @@ const onEnter = (el: Element, done: () => void) => {
   $gsap.set(movingLines, { yPercent: 100 });
 
   const tl = $gsap.timeline({ onComplete: done });
+
+  // 1. Perdeyi İndir
   tl.to(el, { yPercent: 0, duration: 1.0, ease: "expo.inOut" });
-  tl.set([navContainer, footerContainer], { opacity: 1 });
-  tl.to(movingLines, {
-    yPercent: 0,
-    duration: 1.4,
-    stagger: 0.08,
-    ease: "expo.out",
-  });
+
+  // 2. İKON ANİMASYONU (Açılış Bittikten Sonra)
+  // İki çizgiyi ortada birleştirip tek çizgi yapıyoruz.
+  if (topLine.value && bottomLine.value) {
+    tl.to(
+      [topLine.value, bottomLine.value],
+      {
+        y: (i) => (i === 0 ? 2.5 : -2.5), // Üstü aşağı, altı yukarı it (gap:4px + 1px height hesabı)
+        duration: 0.4,
+        ease: "power2.out",
+      },
+      "-=0.1", // Perde iner inmez başlasın (akıcılık için çok hafif bindirdik)
+    );
+  }
+
+  // 3. Linkleri Getir
+  tl.set([navContainer, footerContainer], { opacity: 1 }, "<");
+  tl.to(
+    movingLines,
+    {
+      yPercent: 0,
+      duration: 1.4,
+      stagger: 0.08,
+      ease: "expo.out",
+    },
+    "<0.2",
+  );
 };
 
+// --- MENÜ KAPANIŞ ANİMASYONU ---
 const onLeave = (el: Element, done: () => void) => {
   if (!$gsap) {
     done();
@@ -217,14 +244,32 @@ const onLeave = (el: Element, done: () => void) => {
 
   const tl = $gsap.timeline({
     onComplete: () => {
-      done();
-      if (pendingRoute.value) {
-        router.push(pendingRoute.value);
-        pendingRoute.value = null;
+      // 3. En Son İkonu Düzelt (Menü tamamen kapandıktan sonra)
+      if (topLine.value && bottomLine.value) {
+        $gsap.to([topLine.value, bottomLine.value], {
+          y: 0, // Eski yerlerine dönsünler
+          duration: 0.4,
+          ease: "power2.out",
+          onComplete: () => {
+            // İkon düzelince route değişimi yap (opsiyonel, daha temiz geçiş için)
+            if (pendingRoute.value) {
+              router.push(pendingRoute.value);
+              pendingRoute.value = null;
+            }
+            done();
+          },
+        });
+      } else {
+        if (pendingRoute.value) {
+          router.push(pendingRoute.value);
+          pendingRoute.value = null;
+        }
+        done();
       }
     },
   });
 
+  // 1. Linkleri Gönder
   if (movingLines.length > 0) {
     tl.to(movingLines, {
       yPercent: -100,
@@ -234,6 +279,7 @@ const onLeave = (el: Element, done: () => void) => {
     });
   }
 
+  // 2. Perdeyi Kaldır (İkon hala tek çizgi)
   tl.to(
     el,
     {
