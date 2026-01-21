@@ -72,6 +72,12 @@
     <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
       <section class="w-full mb-section px-layout pt-layout">
         <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
+          <div class="col-span-4 mb-layout md:col-span-3 md:mb-0">
+            <UITextReveal tag="span" type="lines" class="font-normal text-body">
+              Passion
+            </UITextReveal>
+          </div>
+
           <div class="col-span-4 md:col-start-4 md:col-span-9">
             <UITextReveal
               tag="p"
