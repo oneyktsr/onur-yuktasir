@@ -5,7 +5,7 @@
     >
       <section
         ref="heroSectionRef"
-        class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)]"
+        class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)] md:pt-[calc(theme('spacing.layout')*2.2)]"
       >
         <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
           <div ref="heroTitleRef" class="col-span-4 md:col-span-8">
@@ -264,8 +264,7 @@ let ctx: any;
 onMounted(async () => {
   if (!$gsap || !$ScrollTrigger) return;
 
-  // DÜZELTME 2: Fontların tamamen yüklenmesini bekle.
-  // Bu, build sırasında font gecikmesinden kaynaklı layout kaymasını önler.
+  // Fontların yüklenmesini bekle (Layout kaymasını önlemek için)
   await document.fonts.ready;
 
   let mm = $gsap.matchMedia();
@@ -280,16 +279,13 @@ onMounted(async () => {
         let { isMobile } = context.conditions;
 
         // --- AYARLAR ---
-        // Artık HTML'de data-speed olmadığı için tek kontrol burası.
-        // Bu değerler ile metnin aşağı inme hızı (parallax) kontrol edilir.
         const titleLag = isMobile ? 300 : 200;
-
         const videoScale = isMobile ? 1.7 : 1.5;
         const videoMove = isMobile ? 45 : 35;
 
         // --- UYGULAMA ---
 
-        // A) Title Animation (ÇAKIŞMA GİDERİLDİ)
+        // A) Title Animation
         if (heroTitleRef.value && heroSectionRef.value) {
           $gsap.to(heroTitleRef.value, {
             yPercent: titleLag,
@@ -327,7 +323,6 @@ onMounted(async () => {
     );
   });
 
-  // Her şey yerleştikten sonra ScrollTrigger'ı bir kez daha hesaplat
   $ScrollTrigger.refresh();
 });
 
