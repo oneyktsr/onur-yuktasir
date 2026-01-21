@@ -12,7 +12,7 @@
             <UITextReveal
               tag="h1"
               type="lines"
-              class="text-display font-normal leading-[1.0] tracking-tighter -ml-[0.05em] pb-1"
+              class="text-display font-normal leading-[1.1] tracking-tighter -ml-[0.05em] pb-1"
             >
               Create. Connect. <br />
               Cultivate.
@@ -76,7 +76,7 @@
             <UITextReveal
               tag="p"
               type="lines"
-              class="text-h1 font-normal leading-[1.0] tracking-tighter pb-2"
+              class="text-h1 font-normal leading-[1.1] tracking-tighter pb-2"
             >
               <span
                 class="float-left w-[calc((100%/9)*2)] h-[10px] hidden md:block"
