@@ -8,11 +8,7 @@
         class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)]"
       >
         <div class="grid w-full grid-cols-4 md:grid-cols-12 gap-x-md">
-          <div
-            ref="heroTitleRef"
-            class="col-span-4 md:col-span-8"
-            data-speed="0.85"
-          >
+          <div ref="heroTitleRef" class="col-span-4 md:col-span-8">
             <UITextReveal
               tag="h1"
               type="lines"
@@ -265,14 +261,16 @@ const videoRef = ref<HTMLElement | null>(null);
 
 let ctx: any;
 
-onMounted(() => {
+onMounted(async () => {
   if (!$gsap || !$ScrollTrigger) return;
 
-  // Responsive: matchMedia
+  // DÜZELTME 2: Fontların tamamen yüklenmesini bekle.
+  // Bu, build sırasında font gecikmesinden kaynaklı layout kaymasını önler.
+  await document.fonts.ready;
+
   let mm = $gsap.matchMedia();
 
   ctx = $gsap.context(() => {
-    // Hem VIDEO hem TITLE animasyonlarını responsive olarak ayarlıyoruz.
     mm.add(
       {
         isMobile: "(max-width: 768px)",
@@ -282,24 +280,19 @@ onMounted(() => {
         let { isMobile } = context.conditions;
 
         // --- AYARLAR ---
-
-        // 1. Title Lag (Gecikme)
-        // Desktop: 200 (Ağır)
-        // Mobil: 300 (Daha da ağır, kullanıcı isteği)
+        // Artık HTML'de data-speed olmadığı için tek kontrol burası.
+        // Bu değerler ile metnin aşağı inme hızı (parallax) kontrol edilir.
         const titleLag = isMobile ? 300 : 200;
 
-        // 2. Video Parallax
-        // Desktop: Scale 1.5, Move 35
-        // Mobil: Scale 1.7, Move 45 (Daha agresif)
         const videoScale = isMobile ? 1.7 : 1.5;
         const videoMove = isMobile ? 45 : 35;
 
         // --- UYGULAMA ---
 
-        // A) Title Animation
+        // A) Title Animation (ÇAKIŞMA GİDERİLDİ)
         if (heroTitleRef.value && heroSectionRef.value) {
           $gsap.to(heroTitleRef.value, {
-            yPercent: titleLag, // Cihaza göre değişen değer
+            yPercent: titleLag,
             ease: "none",
             scrollTrigger: {
               trigger: heroSectionRef.value,
@@ -333,6 +326,9 @@ onMounted(() => {
       },
     );
   });
+
+  // Her şey yerleştikten sonra ScrollTrigger'ı bir kez daha hesaplat
+  $ScrollTrigger.refresh();
 });
 
 onUnmounted(() => {
