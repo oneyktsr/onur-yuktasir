@@ -21,10 +21,24 @@
 </template>
 
 <script setup lang="ts">
-import { watch, nextTick, onMounted, computed } from "vue";
+// GÜNCELLEME: onBeforeMount eklendi
+import { watch, nextTick, onMounted, computed, onBeforeMount } from "vue";
 
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
+
+// --- SCROLL RESTORATION FIX (YENİ EKLENEN KISIM) ---
+// Sayfa yenilendiğinde tarayıcının aşağıdan başlatmasını engeller ve en tepeye zorlar.
+onBeforeMount(() => {
+  if (typeof window !== "undefined") {
+    // 1. Tarayıcının otomatik kaydırma hafızasını kapat
+    if (history.scrollRestoration) {
+      history.scrollRestoration = "manual";
+    }
+    // 2. Sayfayı en tepeye (0,0) noktasına zorla
+    window.scrollTo(0, 0);
+  }
+});
 
 // Sayfa yüklenene kadar scroll kilitlenir
 useHead({
