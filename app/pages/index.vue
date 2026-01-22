@@ -33,7 +33,7 @@
           </div>
 
           <div
-            class="order-1 col-span-4 mb-[calc(theme('spacing.layout')*2)] text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
+            class="order-1 col-span-4 mb-[calc(theme('spacing.layout')*4)] text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
           >
             <UITextReveal
               tag="p"
@@ -77,7 +77,9 @@
     </div>
 
     <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
-      <section class="w-full mb-section px-layout pt-layout">
+      <section
+        class="w-full mb-section px-layout pt-[calc(theme('spacing.layout')*2)]"
+      >
         <div
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
         >
@@ -117,6 +119,18 @@
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md mt-[calc(theme('spacing.layout')*2)]"
         >
           <div
+            class="col-span-4 mb-2 md:col-start-5 md:col-span-3 lg:col-start-5 lg:col-span-3 lg:mb-0"
+          >
+            <UITextReveal
+              tag="span"
+              type="lines"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal opacity-50"
+            >
+              / What Drives Us
+            </UITextReveal>
+          </div>
+
+          <div
             class="col-span-4 md:col-start-5 md:col-span-3 lg:col-start-8 lg:col-span-3"
           >
             <UITextReveal
@@ -128,7 +142,33 @@
               experiences. Every project is an opportunity to explore new ideas,
               push boundaries, and create solutions that truly connect with
               audiences.
-              <br /><br />
+            </UITextReveal>
+          </div>
+        </div>
+
+        <div
+          class="grid w-full grid-cols-4 mt-8 md:grid-cols-8 lg:grid-cols-12 gap-x-md lg:mt-12"
+        >
+          <div
+            class="col-span-4 mb-2 md:col-start-5 md:col-span-3 lg:col-start-5 lg:col-span-3 lg:mb-0"
+          >
+            <UITextReveal
+              tag="span"
+              type="lines"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal opacity-50"
+            >
+              / Our Approach
+            </UITextReveal>
+          </div>
+
+          <div
+            class="col-span-4 md:col-start-5 md:col-span-3 lg:col-start-8 lg:col-span-3"
+          >
+            <UITextReveal
+              tag="p"
+              type="lines"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal"
+            >
               By combining creativity, technology, and strategic thinking, we
               deliver work that is not only visually compelling but also
               meaningful and effective, helping brands grow and resonate in an
@@ -138,116 +178,62 @@
         </div>
       </section>
 
-      <section class="w-full mb-section px-layout">
+      <section class="w-full overflow-hidden mb-section">
         <div
-          class="grid items-baseline grid-cols-4 pb-4 mb-12 border-b md:grid-cols-8 lg:grid-cols-12 gap-x-md border-custom-light/10"
+          class="grid items-baseline grid-cols-4 border-b pb-layout px-layout md:grid-cols-8 lg:grid-cols-12 gap-x-md border-custom-light/10"
         >
           <div class="col-span-2 md:col-span-4 lg:col-span-6">
             <UITextReveal
               tag="h2"
               type="lines"
-              class="tracking-widest uppercase opacity-50 text-small"
-              >Selected Works</UITextReveal
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal"
             >
+              Trusted By
+            </UITextReveal>
           </div>
           <div class="col-span-2 text-right md:col-span-4 lg:col-span-6">
-            <span class="opacity-50 text-small">(01 — 04)</span>
+            <span
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal opacity-50"
+            >
+              (18 — 26)
+            </span>
           </div>
         </div>
 
-        <div
-          class="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md gap-y-section"
-        >
+        <div class="w-full pt-layout">
           <div
-            class="flex flex-col col-span-4 md:col-span-4 lg:col-span-6 gap-y-section"
+            ref="marqueeContainerRef"
+            class="relative flex w-full overflow-hidden"
           >
-            <div class="block w-full cursor-pointer group" data-speed="1.05">
+            <div
+              ref="marqueeInnerRef"
+              class="flex items-center w-max will-change-transform"
+            >
               <div
-                class="w-full aspect-[4/5] bg-neutral-400 mb-6 group-hover:opacity-90 transition-opacity relative overflow-hidden"
+                v-for="set in 3"
+                :key="`set-${set}`"
+                class="flex items-center pr-8 gap-x-8 md:gap-x-12 lg:gap-x-16 md:pr-12 lg:pr-16 shrink-0"
               >
-                <div
-                  class="absolute inset-0 bg-neutral-800/10 mix-blend-multiply"
-                ></div>
-              </div>
-              <div class="flex flex-col pt-4 border-t border-custom-light/10">
-                <UITextReveal
-                  tag="h3"
-                  type="lines"
-                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
-                  >Aesop Signature</UITextReveal
+                <svg
+                  v-for="i in 9"
+                  :key="`l-${set}-${i}`"
+                  class="w-auto h-5 overflow-visible opacity-50 fill-current md:h-6 lg:h-7 text-custom-light"
+                  viewBox="0 0 150 30"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                <UITextReveal
-                  tag="p"
-                  type="lines"
-                  :delay="0.1"
-                  class="opacity-50 text-body"
-                  >Art Direction & Design</UITextReveal
-                >
-              </div>
-            </div>
-            <div class="block w-full cursor-pointer group" data-speed="1.0">
-              <div
-                class="w-full mb-6 transition-opacity aspect-video bg-neutral-800 group-hover:opacity-90"
-              ></div>
-              <div class="flex flex-col pt-4 border-t border-custom-light/10">
-                <UITextReveal
-                  tag="h3"
-                  type="lines"
-                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
-                  >Muji Concept</UITextReveal
-                >
-                <UITextReveal
-                  tag="p"
-                  type="lines"
-                  :delay="0.1"
-                  class="opacity-50 text-body"
-                  >Web Design</UITextReveal
-                >
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="flex flex-col col-span-4 md:col-span-4 lg:col-span-6 gap-y-section md:pt-32"
-          >
-            <div class="block w-full cursor-pointer group" data-speed="0.95">
-              <div
-                class="w-full mb-6 transition-opacity aspect-square bg-neutral-600 group-hover:opacity-90"
-              ></div>
-              <div class="flex flex-col pt-4 border-t border-custom-light/10">
-                <UITextReveal
-                  tag="h3"
-                  type="lines"
-                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
-                  >Braun Archive</UITextReveal
-                >
-                <UITextReveal
-                  tag="p"
-                  type="lines"
-                  :delay="0.1"
-                  class="opacity-50 text-body"
-                  >Development</UITextReveal
-                >
-              </div>
-            </div>
-            <div class="block w-full cursor-pointer group" data-speed="1.1">
-              <div
-                class="w-full aspect-[3/4] bg-neutral-500 mb-6 group-hover:opacity-90 transition-opacity"
-              ></div>
-              <div class="flex flex-col pt-4 border-t border-custom-light/10">
-                <UITextReveal
-                  tag="h3"
-                  type="lines"
-                  class="mb-2 font-normal leading-[0.95] tracking-tight text-h2 pb-1"
-                  >Dieter Rams</UITextReveal
-                >
-                <UITextReveal
-                  tag="p"
-                  type="lines"
-                  :delay="0.1"
-                  class="opacity-50 text-body"
-                  >Interaction</UITextReveal
-                >
+                  <rect v-if="i % 3 === 0" width="30" height="30" />
+                  <circle v-else-if="i % 3 === 1" cx="15" cy="15" r="15" />
+                  <path v-else d="M15 0 L30 30 L0 30 Z" />
+                  <text
+                    x="40"
+                    y="22"
+                    font-family="sans-serif"
+                    font-size="20"
+                    font-weight="bold"
+                  >
+                    BRAND {{ i }}
+                  </text>
+                </svg>
               </div>
             </div>
           </div>
@@ -327,6 +313,8 @@ const heroTitleRef = ref<HTMLElement | null>(null);
 const videoContainerRef = ref<HTMLElement | null>(null);
 const videoRef = ref<HTMLElement | null>(null);
 
+const marqueeInnerRef = ref<HTMLElement | null>(null);
+
 let ctx: any;
 
 onMounted(async () => {
@@ -349,6 +337,7 @@ onMounted(async () => {
         const videoScale = isMobile ? 1.7 : 1.5;
         const videoMove = isMobile ? 45 : 35;
 
+        // HERO ANIMATIONS
         if (heroTitleRef.value && heroSectionRef.value) {
           $gsap.to(heroTitleRef.value, {
             yPercent: titleLag,
@@ -380,6 +369,22 @@ onMounted(async () => {
               },
             },
           );
+        }
+
+        // --- SIMPLE MARQUEE LOGIC ---
+        if (marqueeInnerRef.value) {
+          let xPercent = 0;
+          const speed = -0.002;
+
+          $gsap.ticker.add((time: number, deltaTime: number) => {
+            xPercent += speed * deltaTime * 0.8;
+
+            if (xPercent <= -33.333) {
+              xPercent = 0;
+            }
+
+            $gsap.set(marqueeInnerRef.value, { xPercent: xPercent });
+          });
         }
       },
     );
