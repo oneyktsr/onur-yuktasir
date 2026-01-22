@@ -3,7 +3,7 @@
     <div class="w-full bg-[#e4e0db] text-custom-dark overflow-hidden">
       <section
         ref="heroSectionRef"
-        class="relative w-full h-[80svh] px-layout flex flex-col justify-between pb-layout pt-[calc(theme('spacing.layout')*3)] md:pt-[calc(theme('spacing.layout')*2.2)]"
+        class="relative w-full h-[80svh] px-layout flex flex-col justify-between pt-[calc(theme('spacing.layout')*3)] pb-[calc(theme('spacing.layout')*2)] md:pb-layout md:pt-[calc(theme('spacing.layout')*2.2)]"
       >
         <div
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
@@ -33,7 +33,7 @@
           </div>
 
           <div
-            class="order-1 col-span-4 mb-[calc(theme('spacing.layout')*4)] text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
+            class="order-1 col-span-4 mb-[calc(theme('spacing.layout')*2)] text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
           >
             <UITextReveal
               tag="p"
@@ -78,7 +78,7 @@
 
     <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
       <section
-        class="w-full mb-section px-layout pt-[calc(theme('spacing.layout')*2)]"
+        class="w-full mb-section px-layout pt-[calc(theme('spacing.layout')*2)] md:pt-layout"
       >
         <div
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
@@ -124,7 +124,7 @@
             <UITextReveal
               tag="span"
               type="lines"
-              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal opacity-50"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal text-custom-light/50"
             >
               / What Drives Us
             </UITextReveal>
@@ -155,7 +155,7 @@
             <UITextReveal
               tag="span"
               type="lines"
-              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal opacity-50"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal text-custom-light/50"
             >
               / Our Approach
             </UITextReveal>
@@ -193,7 +193,7 @@
           </div>
           <div class="col-span-2 text-right md:col-span-4 lg:col-span-6">
             <span
-              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal opacity-50"
+              class="text-[clamp(1rem,0.75rem+0.5vw,3rem)] leading-tight font-normal text-custom-light/50"
             >
               (18 — 26)
             </span>
