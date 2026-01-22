@@ -42,7 +42,7 @@
               class="text-h4 font-normal leading-[1.1] tracking-tight pb-1"
             >
               We create digital experiences that inspire engagement and deliver
-              measurable impact for forward-thinking brands and businesses.
+              measurable impact for forward — thinking brands and businesses.
             </UITextReveal>
           </div>
         </div>
@@ -132,7 +132,7 @@
               By combining creativity, technology, and strategic thinking, we
               deliver work that is not only visually compelling but also
               meaningful and effective, helping brands grow and resonate in an
-              ever-changing digital landscape.
+              ever — changing digital landscape.
             </UITextReveal>
           </div>
         </div>
