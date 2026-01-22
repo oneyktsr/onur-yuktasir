@@ -333,7 +333,7 @@ onMounted(async () => {
       (context: any) => {
         let { isMobile } = context.conditions;
 
-        const titleLag = isMobile ? 300 : 200;
+        const titleLag = isMobile ? 250 : 150;
         const videoScale = isMobile ? 1.7 : 1.5;
         const videoMove = isMobile ? 45 : 35;
 
