@@ -483,35 +483,26 @@ onMounted(async () => {
           );
         }
 
-        // --- LINEAR PARALLAX EFFECT (SLOWER & PRECISE) ---
+        // --- LINEAR PARALLAX EFFECT (RESPONSIVE SPEED) ---
         if (curtainWrapperRef.value && darkWrapperRef.value) {
-          // REVİZE 1: Çarpanı 0.4'e düşürdük. (Daha az mesafe = Daha yavaş hareket)
-          const overlapHeight = window.innerHeight * 0.4;
+          // REVİZE: Mobilde %20 (0.2), Masaüstünde %30 (0.3)
+          const overlapFactor = isMobile ? 0.2 : 0.3;
+          const overlapHeight = window.innerHeight * overlapFactor;
 
-          // 1. Fiziksel yukarı çekme (Footer boşluğunu önler)
+          // 1. Fiziksel yukarı çekme
           $gsap.set(curtainWrapperRef.value, { marginTop: -overlapHeight });
 
           // 2. Doğrusal Animasyon
           $gsap.fromTo(
             curtainWrapperRef.value,
-            { y: overlapHeight }, // Görsel olarak aşağıdan başlar
+            { y: overlapHeight },
             {
-              y: 0, // Yukarı doğru (yerine) kayar
-
+              y: 0,
               ease: "none",
-
               scrollTrigger: {
                 trigger: darkWrapperRef.value,
-
-                // REVİZE 2: "bottom bottom" ile Siyah bölümün bittiği nokta baz alınır.
-                // Bu, mobildeki gecikmeyi önler.
                 start: "bottom bottom",
-
-                // REVİZE 3: Akışı 'Video' bölümü gibi doğal yapmak için,
-                // animasyonu ekran boyu (veya wrapper boyu) kadar yayıyoruz.
-                // Bu sayede hareket "vites değiştirmeden" sabit akar.
                 end: "bottom top",
-
                 scrub: true,
                 invalidateOnRefresh: true,
               },
