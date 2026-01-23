@@ -76,7 +76,9 @@
       </section>
     </div>
 
-    <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
+    <div
+      class="relative z-0 w-full bg-custom-dark text-custom-light pb-[calc(theme('spacing.layout')*4)]"
+    >
       <section
         class="w-full px-layout pt-[calc(theme('spacing.layout')*2)] md:pt-layout mb-[calc(theme('spacing.layout')*4)]"
       >
@@ -178,9 +180,7 @@
         </div>
       </section>
 
-      <section
-        class="w-full overflow-hidden mb-[calc(theme('spacing.layout')*4)]"
-      >
+      <section class="w-full overflow-hidden">
         <div
           class="grid items-baseline grid-cols-4 border-b pb-layout px-layout md:grid-cols-8 lg:grid-cols-12 gap-x-md border-custom-light/10"
         >
@@ -241,64 +241,171 @@
           </div>
         </div>
       </section>
+    </div>
 
+    <div
+      ref="curtainWrapperRef"
+      class="relative z-10 w-full will-change-transform"
+    >
       <section
-        class="grid w-full grid-cols-4 border-t px-layout py-section border-custom-light/10 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
+        class="w-full bg-custom-light text-custom-dark px-layout py-section pb-[calc(theme('spacing.layout')*4)]"
       >
         <div
-          class="col-span-4 text-center md:col-start-2 md:col-span-6 lg:col-start-2 lg:col-span-10"
+          class="grid w-full grid-cols-4 pb-8 mb-12 border-b md:grid-cols-8 lg:grid-cols-12 gap-x-md border-custom-dark/10"
         >
-          <UITextReveal
-            tag="p"
-            type="lines"
-            class="text-h1 font-normal leading-[0.96] tracking-tighter pb-2"
-            data-speed="0.95"
+          <div
+            class="col-span-4 md:col-start-3 md:col-span-6 lg:col-start-3 lg:col-span-8"
           >
-            "Good design is as little design as possible."
-          </UITextReveal>
-        </div>
-      </section>
-
-      <footer class="w-full overflow-hidden px-layout py-section">
-        <div
-          class="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md h-[50vh] content-between"
-        >
-          <div class="col-span-4 md:col-span-6 lg:col-span-8">
             <UITextReveal
               tag="h2"
               type="lines"
-              class="text-display tracking-tighter leading-[0.8]"
-              >Let's <br />
-              Talk</UITextReveal
+              class="text-display font-normal leading-[1.1] tracking-tighter -ml-[0.05em] pb-1"
             >
-          </div>
-
-          <div
-            class="flex items-start justify-start col-span-4 mt-8 md:col-span-2 md:justify-end md:mt-0 lg:col-span-4"
-          >
-            <button
-              class="group border border-[#e4e0db]/20 px-10 py-5 rounded-full hover:bg-[#e4e0db] hover:text-custom-dark transition-all duration-300"
-            >
-              <span
-                class="inline-block text-xs tracking-widest uppercase transition-transform text-body group-hover:translate-x-1"
-                >Get in touch</span
-              >
-            </button>
-          </div>
-
-          <div
-            class="col-span-4 md:col-span-8 lg:col-span-12 flex justify-between items-end opacity-50 text-small uppercase border-t border-[#e4e0db]/20 pt-8 mt-auto"
-          >
-            <div class="flex flex-col gap-1">
-              <span>© 2026 Studio</span>
-              <span>All Rights Reserved</span>
-            </div>
-            <span class="transition-opacity cursor-pointer hover:opacity-100"
-              >Back to Top</span
-            >
+              Selected Works
+            </UITextReveal>
           </div>
         </div>
-      </footer>
+
+        <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-x-md gap-y-16">
+          <div class="cursor-pointer group">
+            <div
+              class="w-full aspect-[4/3] bg-custom-dark/5 overflow-hidden mb-4 relative"
+            >
+              <div
+                class="absolute inset-0 transition-colors duration-500 bg-custom-dark/10 group-hover:bg-custom-dark/20"
+              ></div>
+            </div>
+            <div
+              class="flex items-baseline justify-between pb-2 border-b border-custom-dark/20"
+            >
+              <h3 class="text-h4 font-normal leading-[1.1] tracking-tight pb-1">
+                Aesop Signature
+              </h3>
+              <span class="opacity-60 text-small">2024</span>
+            </div>
+            <p class="mt-2 opacity-70 text-body">Digital Experience</p>
+          </div>
+
+          <div class="cursor-pointer group">
+            <div
+              class="w-full aspect-[4/3] bg-custom-dark/5 overflow-hidden mb-4 relative"
+            >
+              <div
+                class="absolute inset-0 transition-colors duration-500 bg-custom-dark/10 group-hover:bg-custom-dark/20"
+              ></div>
+            </div>
+            <div
+              class="flex items-baseline justify-between pb-2 border-b border-custom-dark/20"
+            >
+              <h3 class="text-h4 font-normal leading-[1.1] tracking-tight pb-1">
+                Astra Foundation
+              </h3>
+              <span class="opacity-60 text-small">2023</span>
+            </div>
+            <p class="mt-2 opacity-70 text-body">Branding, Website</p>
+          </div>
+
+          <div class="cursor-pointer group">
+            <div
+              class="w-full aspect-[4/3] bg-custom-dark/5 overflow-hidden mb-4 relative"
+            >
+              <div
+                class="absolute inset-0 transition-colors duration-500 bg-custom-dark/10 group-hover:bg-custom-dark/20"
+              ></div>
+            </div>
+            <div
+              class="flex items-baseline justify-between pb-2 border-b border-custom-dark/20"
+            >
+              <h3 class="text-h4 font-normal leading-[1.1] tracking-tight pb-1">
+                Neo Gallery
+              </h3>
+              <span class="opacity-60 text-small">2023</span>
+            </div>
+            <p class="mt-2 opacity-70 text-body">Immersive, WebGL</p>
+          </div>
+
+          <div class="cursor-pointer group">
+            <div
+              class="w-full aspect-[4/3] bg-custom-dark/5 overflow-hidden mb-4 relative"
+            >
+              <div
+                class="absolute inset-0 transition-colors duration-500 bg-custom-dark/10 group-hover:bg-custom-dark/20"
+              ></div>
+            </div>
+            <div
+              class="flex items-baseline justify-between pb-2 border-b border-custom-dark/20"
+            >
+              <h3 class="text-h4 font-normal leading-[1.1] tracking-tight pb-1">
+                Studio Lumina
+              </h3>
+              <span class="opacity-60 text-small">2022</span>
+            </div>
+            <p class="mt-2 opacity-70 text-body">Identity, Strategy</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="w-full bg-custom-dark text-custom-light">
+        <section
+          class="grid w-full grid-cols-4 px-layout py-section md:grid-cols-8 lg:grid-cols-12 gap-x-md"
+        >
+          <div
+            class="col-span-4 text-center md:col-start-2 md:col-span-6 lg:col-start-2 lg:col-span-10"
+          >
+            <UITextReveal
+              tag="p"
+              type="lines"
+              class="text-h1 font-normal leading-[0.96] tracking-tighter pb-2"
+              data-speed="0.95"
+            >
+              "Good design is as little design as possible."
+            </UITextReveal>
+          </div>
+        </section>
+
+        <footer
+          class="w-full overflow-hidden border-t px-layout py-section border-custom-light/10"
+        >
+          <div
+            class="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md h-[50vh] content-between"
+          >
+            <div class="col-span-4 md:col-span-6 lg:col-span-8">
+              <UITextReveal
+                tag="h2"
+                type="lines"
+                class="text-display tracking-tighter leading-[0.8]"
+                >Let's <br />
+                Talk</UITextReveal
+              >
+            </div>
+
+            <div
+              class="flex items-start justify-start col-span-4 mt-8 md:col-span-2 md:justify-end md:mt-0 lg:col-span-4"
+            >
+              <button
+                class="group border border-[#e4e0db]/20 px-10 py-5 rounded-full hover:bg-[#e4e0db] hover:text-custom-dark transition-all duration-300"
+              >
+                <span
+                  class="inline-block text-xs tracking-widest uppercase transition-transform text-body group-hover:translate-x-1"
+                  >Get in touch</span
+                >
+              </button>
+            </div>
+
+            <div
+              class="col-span-4 md:col-span-8 lg:col-span-12 flex justify-between items-end opacity-50 text-small uppercase border-t border-[#e4e0db]/20 pt-8 mt-auto"
+            >
+              <div class="flex flex-col gap-1">
+                <span>© 2026 Studio</span>
+                <span>All Rights Reserved</span>
+              </div>
+              <span class="transition-opacity cursor-pointer hover:opacity-100"
+                >Back to Top</span
+              >
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   </div>
 </template>
@@ -316,6 +423,7 @@ const videoContainerRef = ref<HTMLElement | null>(null);
 const videoRef = ref<HTMLElement | null>(null);
 
 const marqueeInnerRef = ref<HTMLElement | null>(null);
+const curtainWrapperRef = ref<HTMLElement | null>(null);
 
 let ctx: any;
 
@@ -367,6 +475,26 @@ onMounted(async () => {
                 trigger: videoContainerRef.value,
                 start: "top bottom",
                 end: "bottom top",
+                scrub: true,
+              },
+            },
+          );
+        }
+
+        // --- SCROLL-BASED CURTAIN EFFECT (FASTER & CLEARER) ---
+        if (curtainWrapperRef.value) {
+          $gsap.fromTo(
+            curtainWrapperRef.value,
+            { y: 0 },
+            {
+              // HIZLANDIRILDI: -150 yerine -300 yapıldı.
+              // Bu sayede üzerine binme efekti çok daha net ve hızlı olacak.
+              y: -300,
+              ease: "none",
+              scrollTrigger: {
+                trigger: curtainWrapperRef.value,
+                start: "top 110%", // Takılmayı önlemek için erken başlangıç
+                end: "top top",
                 scrub: true,
               },
             },
