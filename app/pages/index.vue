@@ -78,7 +78,7 @@
 
     <div class="w-full overflow-hidden bg-custom-dark text-custom-light">
       <section
-        class="w-full px-layout pt-[calc(theme('spacing.layout')*2)] md:pt-layout mb-[calc(theme('spacing.layout')*4)]"
+        class="w-full px-layout pt-[calc(theme('spacing.layout')*2)] md:pt-layout mb-[calc(theme('spacing.layout')*6)]"
       >
         <div
           class="grid w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
