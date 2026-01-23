@@ -486,7 +486,7 @@ onMounted(async () => {
         // --- LINEAR PARALLAX EFFECT (RESPONSIVE SPEED) ---
         if (curtainWrapperRef.value && darkWrapperRef.value) {
           // REVİZE: Mobilde %20 (0.2), Masaüstünde %30 (0.3)
-          const overlapFactor = isMobile ? 0.2 : 0.3;
+          const overlapFactor = isMobile ? 0.25 : 0.3;
           const overlapHeight = window.innerHeight * overlapFactor;
 
           // 1. Fiziksel yukarı çekme
