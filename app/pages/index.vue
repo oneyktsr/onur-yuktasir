@@ -77,7 +77,8 @@
     </div>
 
     <div
-      class="relative z-0 w-full bg-custom-dark text-custom-light pb-[calc(theme('spacing.layout')*4)]"
+      ref="darkWrapperRef"
+      class="relative z-0 w-full bg-custom-dark text-custom-light pb-[calc(theme('spacing.layout')*4)] overflow-hidden"
     >
       <section
         class="w-full px-layout pt-[calc(theme('spacing.layout')*2)] md:pt-layout mb-[calc(theme('spacing.layout')*4)]"
@@ -424,6 +425,7 @@ const videoRef = ref<HTMLElement | null>(null);
 
 const marqueeInnerRef = ref<HTMLElement | null>(null);
 const curtainWrapperRef = ref<HTMLElement | null>(null);
+const darkWrapperRef = ref<HTMLElement | null>(null);
 
 let ctx: any;
 
@@ -481,28 +483,35 @@ onMounted(async () => {
           );
         }
 
-        // --- BULLETPROOF CURTAIN EFFECT (INVERTED LOGIC) ---
-        if (curtainWrapperRef.value) {
-          // 1. Hesapla: Ekranın %50'si kadar bindirme
-          const overlapAmount = window.innerHeight * 0.5;
+        // --- LINEAR PARALLAX EFFECT (SLOWER & PRECISE) ---
+        if (curtainWrapperRef.value && darkWrapperRef.value) {
+          // REVİZE 1: Çarpanı 0.4'e düşürdük. (Daha az mesafe = Daha yavaş hareket)
+          const overlapHeight = window.innerHeight * 0.4;
 
-          // 2. FİZİKSEL olarak yukarı çek (Margin Top)
-          // Bu, sayfa boyunu en baştan kısaltır. Tarayıcı render ederken boşluk bırakmaz.
-          $gsap.set(curtainWrapperRef.value, { marginTop: -overlapAmount });
+          // 1. Fiziksel yukarı çekme (Footer boşluğunu önler)
+          $gsap.set(curtainWrapperRef.value, { marginTop: -overlapHeight });
 
-          // 3. GÖRSEL olarak aşağı it (Translate Y)
-          // Fiziksel olarak yukarıda olan elemanı, görsel olarak normal yerine (aşağı) itiyoruz.
-          // Sonuç: Kullanıcı başta her şeyi normal görür.
+          // 2. Doğrusal Animasyon
           $gsap.fromTo(
             curtainWrapperRef.value,
-            { y: overlapAmount }, // Pozitif değerle aşağı it
+            { y: overlapHeight }, // Görsel olarak aşağıdan başlar
             {
-              y: 0, // 0'a çekerek yukarı (kendi marginli yerine) kaydır
+              y: 0, // Yukarı doğru (yerine) kayar
+
               ease: "none",
+
               scrollTrigger: {
-                trigger: curtainWrapperRef.value,
-                start: "top 100%",
-                end: "top top",
+                trigger: darkWrapperRef.value,
+
+                // REVİZE 2: "bottom bottom" ile Siyah bölümün bittiği nokta baz alınır.
+                // Bu, mobildeki gecikmeyi önler.
+                start: "bottom bottom",
+
+                // REVİZE 3: Akışı 'Video' bölümü gibi doğal yapmak için,
+                // animasyonu ekran boyu (veya wrapper boyu) kadar yayıyoruz.
+                // Bu sayede hareket "vites değiştirmeden" sabit akar.
+                end: "bottom top",
+
                 scrub: true,
                 invalidateOnRefresh: true,
               },
