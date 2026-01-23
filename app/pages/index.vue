@@ -245,7 +245,7 @@
 
     <div
       ref="curtainWrapperRef"
-      class="relative z-10 w-full will-change-transform"
+      class="relative z-10 w-full will-change-transform bg-custom-dark"
     >
       <section
         class="w-full bg-custom-light text-custom-dark px-layout py-section pb-[calc(theme('spacing.layout')*4)]"
@@ -481,21 +481,30 @@ onMounted(async () => {
           );
         }
 
-        // --- SCROLL-BASED CURTAIN EFFECT (FASTER & CLEARER) ---
+        // --- BULLETPROOF CURTAIN EFFECT (INVERTED LOGIC) ---
         if (curtainWrapperRef.value) {
+          // 1. Hesapla: Ekranın %50'si kadar bindirme
+          const overlapAmount = window.innerHeight * 0.5;
+
+          // 2. FİZİKSEL olarak yukarı çek (Margin Top)
+          // Bu, sayfa boyunu en baştan kısaltır. Tarayıcı render ederken boşluk bırakmaz.
+          $gsap.set(curtainWrapperRef.value, { marginTop: -overlapAmount });
+
+          // 3. GÖRSEL olarak aşağı it (Translate Y)
+          // Fiziksel olarak yukarıda olan elemanı, görsel olarak normal yerine (aşağı) itiyoruz.
+          // Sonuç: Kullanıcı başta her şeyi normal görür.
           $gsap.fromTo(
             curtainWrapperRef.value,
-            { y: 0 },
+            { y: overlapAmount }, // Pozitif değerle aşağı it
             {
-              // HIZLANDIRILDI: -150 yerine -300 yapıldı.
-              // Bu sayede üzerine binme efekti çok daha net ve hızlı olacak.
-              y: -300,
+              y: 0, // 0'a çekerek yukarı (kendi marginli yerine) kaydır
               ease: "none",
               scrollTrigger: {
                 trigger: curtainWrapperRef.value,
-                start: "top 110%", // Takılmayı önlemek için erken başlangıç
+                start: "top 100%",
                 end: "top top",
                 scrub: true,
+                invalidateOnRefresh: true,
               },
             },
           );
@@ -520,7 +529,9 @@ onMounted(async () => {
     );
   });
 
-  $ScrollTrigger.refresh();
+  setTimeout(() => {
+    $ScrollTrigger.refresh();
+  }, 500);
 });
 
 onUnmounted(() => {
