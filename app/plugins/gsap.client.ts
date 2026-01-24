@@ -7,8 +7,16 @@ export default defineNuxtPlugin((nuxtApp) => {
   if (import.meta.client) {
     try {
       (gsap as any).registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
-      // FPS düşüşlerini engellemek için
-      (gsap as any).ticker.lagSmoothing(0);
+
+      // --- PERFORMANS AYARI (STANDART) ---
+      (gsap as any).ticker.lagSmoothing(500, 33);
+
+      // --- %100 GÜVENLİK AYARI (YENİ) ---
+      // Resize, Load veya DOM değişimlerinde hesaplamaları zorla.
+      // Bu, SmoothScroll ile ScrollTrigger arasındaki milimetrik senkronizasyonu korur.
+      (ScrollTrigger as any).config({
+        autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize",
+      });
     } catch (e) {
       console.warn("GSAP Register Error:", e);
     }
