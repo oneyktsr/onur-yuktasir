@@ -61,7 +61,7 @@ onMounted(() => {
         content: "#smooth-content",
         smooth: 1.5,
         effects: true,
-        smoothTouch: 0,
+        smoothTouch: 0.3,
         normalizeScroll: true,
         ignoreMobileResize: true,
       });
