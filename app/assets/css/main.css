@@ -83,7 +83,7 @@ video {
 
 /* 5. Sayfa Geçişleri (Page Transition) */
 .page-leave-active {
-  transition: opacity 0.6s ease-in;
+  transition: opacity 0.4s ease-in;
   backface-visibility: hidden;
   transform: translateZ(0);
 }
@@ -93,7 +93,7 @@ video {
 }
 
 .page-enter-active {
-  transition: opacity 0.6s ease-out;
+  transition: opacity 0.4s ease-out;
   backface-visibility: hidden;
   transform: translateZ(0);
 }

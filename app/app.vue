@@ -17,7 +17,14 @@
     >
       <div id="smooth-content">
         <NuxtLayout>
-          <NuxtPage />
+          <NuxtPage
+            :transition="{
+              name: 'page',
+              mode: 'out-in',
+              onBeforeEnter: handleBeforeEnter,
+              onAfterEnter: handleAfterEnter,
+            }"
+          />
         </NuxtLayout>
       </div>
     </div>
@@ -29,7 +36,6 @@ import { watch, onMounted, computed, onBeforeMount } from "vue";
 
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
-const route = useRoute();
 
 // --- SCROLL RESTORATION FIX ---
 onBeforeMount(() => {
@@ -59,9 +65,9 @@ onMounted(() => {
       ($ScrollSmoother as any).create({
         wrapper: "#smooth-wrapper",
         content: "#smooth-content",
-        smooth: 1.5,
+        smooth: 1.0,
         effects: true,
-        smoothTouch: 0.3,
+        smoothTouch: 0.1,
         normalizeScroll: true,
         ignoreMobileResize: true,
       });
@@ -76,25 +82,27 @@ onMounted(() => {
   }
 });
 
-// --- ROUTE CHANGE FIX (Sayfa Geçişleri) ---
-// SPA Mantığında sayfalar arası geçişte scroll boyunu ve konumunu düzeltir.
-watch(
-  () => route.path,
-  () => {
-    if ($ScrollSmoother) {
-      const smoother = ($ScrollSmoother as any).get();
-      if (smoother) {
-        // 1. Yeni sayfaya geçerken en tepeye al
-        smoother.scrollTop(0);
+// --- EVENT-DRIVEN SCROLL RESET (Hooks) ---
 
-        // 2. Sayfa geçiş animasyonu bitince ölçümleri yenile
-        setTimeout(() => {
-          if ($ScrollTrigger) ($ScrollTrigger as any).refresh();
-        }, 800);
-      }
+// 1. Yeni sayfa girmeden HEMEN ÖNCE (Eski sayfa gitmiştir)
+const handleBeforeEnter = () => {
+  if ($ScrollSmoother) {
+    const smoother = ($ScrollSmoother as any).get();
+    if (smoother) {
+      // Scroll'u anında tepeye al.
+      // Eski sayfa olmadığı ve yeni sayfa henüz opacity-0 olduğu için zıplama görünmez.
+      smoother.scrollTop(0);
     }
-  },
-);
+  }
+};
+
+// 2. Yeni sayfa tamamen yüklendiğinde ve animasyonu bittiğinde
+const handleAfterEnter = () => {
+  // Yeni DOM oturduğu için ölçümleri yenile
+  if ($ScrollTrigger) {
+    ($ScrollTrigger as any).refresh();
+  }
+};
 
 // Preloader bittiğinde scroll'u serbest bırak
 watch(isLoaded, (val) => {

@@ -66,21 +66,16 @@ const isLoaded = useState("isLoaded");
 const isMenuOpen = useState<boolean>("isMenuOpen");
 const pendingRoute = useState<string | null>("pendingRoute");
 
-// LOGO TIKLAMA MANTIĞI
+// LOGO CLICK
 const handleLogoClick = () => {
   if (isMenuOpen.value) {
-    if (route.path !== "/") {
-      pendingRoute.value = "/";
-    }
+    if (route.path !== "/") pendingRoute.value = "/";
     isMenuOpen.value = false;
   } else {
-    if (route.path !== "/") {
-      router.push("/");
-    }
+    if (route.path !== "/") router.push("/");
   }
 };
 
-// PRELOADER ANİMASYONLARI
 onMounted(() => {
   if (!$gsap || !$SplitText || !brandRef.value) return;
 
@@ -91,29 +86,45 @@ onMounted(() => {
   const logoCenterY = logoRect.top + logoRect.height / 2;
   const moveY = screenCenterY - logoCenterY;
 
-  // --- MOBİL VE SCALE AYARLARI ---
   const isMobile = window.innerWidth < 768;
-
-  // 1. Başlangıç Boyutu (Perde üstündeyken - ZOOM OUT ETKİSİ İÇİN BÜYÜTÜLDÜ)
-  // Mobilde 1.8, Masaüstünde 1.5 ile başlıyor.
   const initialScale = isMobile ? 1.8 : 1.5;
-
-  // 2. Bitiş Boyutu (Yerine oturduğunda)
-  // Mobilde 1.15 (%15 büyük kalır), Masaüstünde 1.0 (Orijinal).
   const finalScale = isMobile ? 1.15 : 1.0;
 
+  // Başlangıç
   $gsap.set(brandRef.value, { opacity: 1, y: moveY, scale: initialScale });
   $gsap.set(split.chars, { opacity: 0 });
   $gsap.set(lineRef.value, { transformOrigin: "left center" });
 
+  // --- KAYNAK KONTROLÜ ---
+  let isPageReady = false;
+
+  const checkPageLoad = () => {
+    Promise.all([
+      document.fonts.ready,
+      new Promise((resolve) => {
+        if (document.readyState === "complete") resolve(true);
+        else window.addEventListener("load", () => resolve(true));
+      }),
+    ]).then(() => {
+      isPageReady = true;
+      if (tl.paused()) {
+        tl.play();
+      }
+    });
+  };
+
+  checkPageLoad();
+
+  // --- TIMELINE ---
   const tl = $gsap.timeline({
+    paused: true,
     onComplete: () => {
       isLoaded.value = true;
       if (curtainRef.value) curtainRef.value.style.display = "none";
     },
   });
 
-  // Animasyon Adımları
+  // 1. LOGO BELİRİYOR (Bu bitmeden çizgi başlamayacak)
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -121,31 +132,47 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  tl.to(
-    lineRef.value,
-    { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
-    "progress",
-  );
+  // 2. ÇİZGİ DOLUYOR (Logo bittikten SONRA başlar)
+  // '<' işareti kaldırıldı, böylece sıralı (sequential) çalışır.
+  tl.to(lineRef.value, {
+    scaleX: 1,
+    duration: 3.0, // Sabit 3 saniye kuralı
+    ease: "power1.inOut",
+  });
 
+  // 3. BEKLEME KONTROLÜ
+  tl.add(() => {
+    if (!isPageReady) {
+      tl.pause();
+    }
+  });
+
+  // 4. ÇIKIŞ ANİMASYONLARI
+
+  // Çizgi Kapanıyor (YAVAŞLATILDI)
+  // duration: 0.6 -> 1.0 yapıldı.
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,
-    { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
-    "exit",
+    { scaleX: 0, duration: 1.0, ease: "power2.inOut" },
+    "+=0.1",
   );
 
+  // Perde Kalkıyor
   tl.to(
     curtainRef.value,
     { yPercent: -100, duration: 1.5, ease: "expo.inOut" },
     "reveal",
   );
 
-  // LOGO YERLEŞİMİ (Küçülerek yerine oturma)
+  // Logo Yerine Oturuyor
   tl.to(
     brandRef.value,
     { y: 0, scale: finalScale, duration: 1.5, ease: "expo.inOut" },
     "reveal",
   );
+
+  tl.play();
 });
 </script>
 
