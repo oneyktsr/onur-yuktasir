@@ -32,11 +32,9 @@ import { watch, onMounted, computed, onBeforeMount } from "vue";
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
 
-// --- SCROLL RESTORATION (Tarayıcı hafızasını iptal et) ---
+// --- SCROLL RESTORATION ---
 onBeforeMount(() => {
   if (typeof window !== "undefined") {
-    // Tarayıcının "kaldığın yerden devam et" özelliğini kapatıyoruz.
-    // Bu, mobildeki kaymaların bir numaralı sebebidir.
     if (history.scrollRestoration) {
       history.scrollRestoration = "manual";
     }
@@ -65,7 +63,8 @@ onMounted(() => {
         effects: true,
         smoothTouch: 0.1,
         normalizeScroll: true,
-        ignoreMobileResize: true, // Mobilde resize tetiklenmesini yoksay (adres çubuğu için)
+        // Mobildeki resize tetiklemelerini yoksay (adres çubuğu için kritik)
+        ignoreMobileResize: true,
       });
 
       if (!isLoaded.value) {
@@ -78,29 +77,44 @@ onMounted(() => {
   }
 });
 
-// --- MOBİL UYUMLU SCROLL RESET ---
+// --- HARD RESET SCROLL LOGIC ---
 const handleBeforeEnter = () => {
-  // 1. Native (Gerçek) Scroll'u Sıfırla
-  // Mobilde adres çubuğu yüzünden oluşan boşluğu burası kapatır.
+  // 1. Tarayıcının kendi scroll'unu zorla sıfırla
   if (typeof window !== "undefined") {
     window.scrollTo(0, 0);
   }
 
-  // 2. Sanal (Smoother) Scroll'u Sıfırla
   if ($ScrollSmoother) {
     const smoother = ($ScrollSmoother as any).get();
     if (smoother) {
-      smoother.scrollTop(0);
-      // Olası momentumu (hızı) sıfırlamak için anlık durdurup başlat
+      // 2. Momentum'u (hızı) anında öldür ve durdur.
       smoother.paused(true);
-      requestAnimationFrame(() => smoother.paused(false));
+
+      // 3. Smoother'ın iç değerini 0 yap.
+      smoother.scrollTop(0);
+
+      // 4. İŞTE ATLADIĞIMIZ DETAY (CSS HARD RESET):
+      // Smoother'ın elemente bastığı 'transform' stilini tamamen siliyoruz.
+      // Bu sayede momentumdan kalan son karedeki kayıklık anında yok olur.
+      const content = document.getElementById("smooth-content");
+      if (content) {
+        content.style.transform = "none";
+        content.style.willChange = "auto"; // Performans reset
+      }
     }
   }
 };
 
 const handleAfterEnter = () => {
-  // DOM oturduktan sonra ScrollTrigger ölçümlerini yenile
-  if ($ScrollTrigger) {
+  if ($ScrollSmoother && $ScrollTrigger) {
+    const smoother = ($ScrollSmoother as any).get();
+
+    // 5. Her şey yüklendi, sistemi tekrar devreye al
+    if (smoother) {
+      smoother.paused(false);
+    }
+
+    // Ölçümleri yenile
     ($ScrollTrigger as any).refresh();
   }
 };
