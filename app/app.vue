@@ -59,7 +59,7 @@ onMounted(() => {
       ($ScrollSmoother as any).create({
         wrapper: "#smooth-wrapper",
         content: "#smooth-content",
-        smooth: 1.0,
+        smooth: 1.5,
         effects: true,
         smoothTouch: 0,
         normalizeScroll: true,
