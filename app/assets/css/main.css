@@ -28,14 +28,11 @@ body {
   margin: 0;
   padding: 0 !important;
 
-  /* ScrollSmoother için KRİTİK */
+  /* ScrollSmoother için ŞART */
   overflow: hidden !important;
 
-  /* --- YENİ EKLENENLER (Scroll Kilitlenmesini Önler) --- */
-  /* Native yaylanmayı kapatır, JS kontrolünü rahatlatır */
+  /* Native yaylanmayı kapat */
   overscroll-behavior: none;
-  /* Dokunmatik davranışları JS'e bırakma konusunda yardımcı olur */
-  /* NOT: normalizeScroll: true olduğu için touch-action: none vermiyoruz, GSAP halleder. */
 
   background-color: #e4e0db;
   color: #1a1a1a;
@@ -44,12 +41,18 @@ body {
   min-height: 100dvh;
 
   font-weight: 250;
+
+  /* --- ANTI-GHOSTING İÇİN EN İYİ KOMBİNASYON --- */
+  /* optimizeLegibility: Metin harf aralıklarını düzeltir */
+  text-rendering: optimizeLegibility;
+
+  /* antialiased: Gri tonlama yumuşatma. Subpixel (renkli) yumuşatmaya göre */
+  /* koyu zeminlerde çok daha az iz bırakır. */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
 }
 
-/* 4. GSAP WRAPPER */
+/* 4. GSAP WRAPPER (Sadece Sahne) */
 #smooth-wrapper {
   position: fixed;
   top: 0;
@@ -62,46 +65,56 @@ body {
   padding: 0 !important;
 }
 
+/* 5. GSAP CONTENT (Ana Taşıyıcı) */
 #smooth-content {
   width: 100vw !important;
   min-height: 100vh;
   box-sizing: border-box;
 
-  /* GPU Zorlaması */
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
-  backface-visibility: hidden;
+  /* ÖNEMLİ DEĞİŞİKLİK: */
+  /* Buradan tüm GPU kodlarını (will-change, transform:3d) KALDIRDIK. */
+  /* Çünkü koca siteyi tek parça işlemek kaliteyi düşürüyor. */
 }
 
+/* --- 6. SMART LAYERING (AKILLI KATMANLAMA) --- */
+/* Sır burada: Content'in içindeki her bir ana parçayı (Section, Div) */
+/* ayrı ayrı GPU katmanına alıyoruz. */
+
+#smooth-content > * {
+  /* Her bir bölümü ayrı bir "Texture" olarak işle */
+  transform: translateZ(0);
+  will-change: transform;
+
+  /* Titremeyi önle */
+  backface-visibility: hidden;
+
+  /* Stack Context oluştur (Z-index karışıklığını ve ghosting'i önler) */
+  isolation: isolate;
+}
+
+/* Görseller ve Videolar için Ekstra Koruma */
 img,
 video {
   max-width: 100%;
   height: auto;
   display: block;
-}
-
-/* 5. Sayfa Geçişleri (Page Transition) */
-.page-leave-active {
-  transition: opacity 0.5s ease-in;
+  /* Resimlerin sürüklenirken yırtılmasını önler */
   backface-visibility: hidden;
   transform: translateZ(0);
 }
 
-.page-leave-to {
-  opacity: 0;
-}
-
+/* 7. Sayfa Geçişleri (Page Transition) */
+.page-leave-active,
 .page-enter-active {
-  transition: opacity 0.5s ease-out;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  transition: opacity 0.5s ease; /* ease-in/out yerine düz ease bazen daha temizdir */
 }
 
+.page-leave-to,
 .page-enter-from {
   opacity: 0;
 }
 
-/* 6. TEXT REVEAL DESCENDER FIX */
+/* 8. TEXT REVEAL FIX */
 .line-inner {
   padding-bottom: 0.2em !important;
   margin-bottom: -0.2em !important;
