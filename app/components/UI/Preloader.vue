@@ -90,7 +90,7 @@ onMounted(() => {
   const initialScale = isMobile ? 1.8 : 1.5;
   const finalScale = isMobile ? 1.15 : 1.0;
 
-  // Başlangıç
+  // Başlangıç Ayarları
   $gsap.set(brandRef.value, { opacity: 1, y: moveY, scale: initialScale });
   $gsap.set(split.chars, { opacity: 0 });
   $gsap.set(lineRef.value, { transformOrigin: "left center" });
@@ -107,6 +107,7 @@ onMounted(() => {
       }),
     ]).then(() => {
       isPageReady = true;
+      // Eğer timeline "duraklama" noktasında bekliyorsa oynat.
       if (tl.paused()) {
         tl.play();
       }
@@ -124,7 +125,7 @@ onMounted(() => {
     },
   });
 
-  // 1. LOGO BELİRİYOR (Bu bitmeden çizgi başlamayacak)
+  // 1. LOGO BELİRİYOR (1.0sn)
   tl.to(split.chars, {
     opacity: 1,
     duration: 1.0,
@@ -132,15 +133,15 @@ onMounted(() => {
     ease: "power2.out",
   });
 
-  // 2. ÇİZGİ DOLUYOR (Logo bittikten SONRA başlar)
-  // '<' işareti kaldırıldı, böylece sıralı (sequential) çalışır.
+  // 2. ÇİZGİ DOLUYOR (1.0sn) - REVİZE EDİLDİ
   tl.to(lineRef.value, {
     scaleX: 1,
-    duration: 3.0, // Sabit 3 saniye kuralı
-    ease: "power1.inOut",
+    duration: 1.0, // İstediğin 1 saniye süresi
+    ease: "power2.inOut",
   });
 
-  // 3. BEKLEME KONTROLÜ
+  // 3. BEKLEME NOKTASI (CHECKPOINT)
+  // Çizgi %100 oldu. Site hazır değilse tam dolu halde bekler.
   tl.add(() => {
     if (!isPageReady) {
       tl.pause();
@@ -149,8 +150,7 @@ onMounted(() => {
 
   // 4. ÇIKIŞ ANİMASYONLARI
 
-  // Çizgi Kapanıyor (YAVAŞLATILDI)
-  // duration: 0.6 -> 1.0 yapıldı.
+  // Çizgi Kapanıyor (1.0sn) - REVİZE EDİLDİ
   tl.set(lineRef.value, { transformOrigin: "right center" });
   tl.to(
     lineRef.value,

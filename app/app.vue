@@ -8,12 +8,7 @@
 
     <div
       id="smooth-wrapper"
-      class="transition-opacity duration-1000 ease-out delay-200"
-      :class="
-        isLoaded
-          ? 'opacity-100 pointer-events-auto'
-          : 'opacity-0 pointer-events-none'
-      "
+      :class="isLoaded ? 'pointer-events-auto' : 'pointer-events-none'"
     >
       <div id="smooth-content">
         <NuxtLayout>
@@ -83,22 +78,16 @@ onMounted(() => {
 });
 
 // --- EVENT-DRIVEN SCROLL RESET (Hooks) ---
-
-// 1. Yeni sayfa girmeden HEMEN ÖNCE (Eski sayfa gitmiştir)
 const handleBeforeEnter = () => {
   if ($ScrollSmoother) {
     const smoother = ($ScrollSmoother as any).get();
     if (smoother) {
-      // Scroll'u anında tepeye al.
-      // Eski sayfa olmadığı ve yeni sayfa henüz opacity-0 olduğu için zıplama görünmez.
       smoother.scrollTop(0);
     }
   }
 };
 
-// 2. Yeni sayfa tamamen yüklendiğinde ve animasyonu bittiğinde
 const handleAfterEnter = () => {
-  // Yeni DOM oturduğu için ölçümleri yenile
   if ($ScrollTrigger) {
     ($ScrollTrigger as any).refresh();
   }

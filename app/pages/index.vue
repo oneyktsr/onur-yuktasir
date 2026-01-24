@@ -13,6 +13,7 @@
             class="col-span-4 md:col-span-6 lg:col-span-8"
           >
             <UITextReveal
+              :key="`title-${isLoaded}`"
               tag="h1"
               type="lines"
               class="text-display font-normal leading-[1.1] tracking-tighter -ml-[0.05em] pb-1"
@@ -27,6 +28,7 @@
           class="grid items-end w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-md"
         >
           <div
+            ref="heroButtonRef"
             class="flex justify-start order-2 col-span-4 md:col-span-4 lg:col-span-4 md:mb-0 md:order-1"
           >
             <UIButton to="/studio" label="Learn More About Us" mode="light" />
@@ -36,8 +38,9 @@
             class="order-1 col-span-4 mb-[calc(theme('spacing.layout')*2)] text-left md:col-start-5 md:col-span-4 md:mb-0 md:order-2 lg:col-start-8 lg:col-span-5"
           >
             <UITextReveal
+              :key="`desc-${isLoaded}`"
               tag="p"
-              :delay="0.2"
+              :delay="0.4"
               type="lines"
               class="text-h4 font-normal leading-[1.1] tracking-tight pb-1"
             >
@@ -412,14 +415,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import UIButton from "~/components/UI/Button.vue";
 import showreelVideo from "~/assets/showreel/2024-04-08T11-54-16.659Z-reel-teaser.mp4";
 
 const { $gsap, $ScrollTrigger } = useNuxtApp();
+const isLoaded = useState("isLoaded");
 
 const heroSectionRef = ref<HTMLElement | null>(null);
 const heroTitleRef = ref<HTMLElement | null>(null);
+const heroButtonRef = ref<HTMLElement | null>(null);
+// heroDescRef kaldırıldı çünkü UITextReveal artık kendi animasyonunu yönetiyor.
+
 const videoContainerRef = ref<HTMLElement | null>(null);
 const videoRef = ref<HTMLElement | null>(null);
 
@@ -429,11 +436,53 @@ const darkWrapperRef = ref<HTMLElement | null>(null);
 
 let ctx: any;
 
+// --- GİRİŞ ANİMASYONU ---
+const playHeroEntrance = () => {
+  if (!$gsap) return;
+
+  const tl = $gsap.timeline({
+    defaults: { ease: "power2.out" },
+  });
+
+  // 1. BUTON: "Text Reveal" efektine benzer şekilde aşağıdan yukarı kayarak gelsin.
+  tl.to(
+    heroButtonRef.value,
+    {
+      autoAlpha: 1,
+      y: 0,
+      duration: 1.2,
+      ease: "expo.out",
+      delay: 0.5, // Başlık ve metin akışına uyum için hafif gecikme
+    },
+    0,
+  );
+
+  // 2. VIDEO: Metinleri beklemeden, neredeyse hemen başlasın (Hafif bir gecikmeyle)
+  tl.to(
+    videoContainerRef.value,
+    {
+      autoAlpha: 1,
+      duration: 1.5,
+    },
+    0.2,
+  ); // Buton ve textler başlarken video da belirmeye başlar (Sıra beklemez)
+};
+
 onMounted(async () => {
   if (!$gsap || !$ScrollTrigger) return;
 
   await document.fonts.ready;
 
+  // 1. BAŞLANGIÇ GİZLEME (Sadece Buton ve Video için)
+  // Metinleri (H1 ve P) gizlemiyoruz çünkü UITextReveal onları zaten gizli başlatıp açacak.
+  if (!isLoaded.value) {
+    // Butonu reveal efekti için biraz aşağı (y: 30) ve görünmez başlatıyoruz
+    $gsap.set(heroButtonRef.value, { autoAlpha: 0, y: 30 });
+    // Video sadece görünmez
+    $gsap.set(videoContainerRef.value, { autoAlpha: 0 });
+  }
+
+  // 2. SCROLL TRIGGER AYARLARI
   let mm = $gsap.matchMedia();
 
   ctx = $gsap.context(() => {
@@ -449,7 +498,6 @@ onMounted(async () => {
         const videoScale = isMobile ? 1.7 : 1.5;
         const videoMove = isMobile ? 45 : 35;
 
-        // HERO ANIMATIONS
         if (heroTitleRef.value && heroSectionRef.value) {
           $gsap.to(heroTitleRef.value, {
             yPercent: titleLag,
@@ -483,16 +531,12 @@ onMounted(async () => {
           );
         }
 
-        // --- LINEAR PARALLAX EFFECT (RESPONSIVE SPEED) ---
         if (curtainWrapperRef.value && darkWrapperRef.value) {
-          // REVİZE: Mobilde %20 (0.2), Masaüstünde %30 (0.3)
           const overlapFactor = isMobile ? 0.25 : 0.3;
           const overlapHeight = window.innerHeight * overlapFactor;
 
-          // 1. Fiziksel yukarı çekme
           $gsap.set(curtainWrapperRef.value, { marginTop: -overlapHeight });
 
-          // 2. Doğrusal Animasyon
           $gsap.fromTo(
             curtainWrapperRef.value,
             { y: overlapHeight },
@@ -510,18 +554,15 @@ onMounted(async () => {
           );
         }
 
-        // --- SIMPLE MARQUEE LOGIC ---
         if (marqueeInnerRef.value) {
           let xPercent = 0;
           const speed = -0.002;
 
           $gsap.ticker.add((time: number, deltaTime: number) => {
             xPercent += speed * deltaTime * 0.8;
-
             if (xPercent <= -33.333) {
               xPercent = 0;
             }
-
             $gsap.set(marqueeInnerRef.value, { xPercent: xPercent });
           });
         }
@@ -532,6 +573,20 @@ onMounted(async () => {
   setTimeout(() => {
     $ScrollTrigger.refresh();
   }, 500);
+
+  // EĞER GERİ DÖNÜŞSE (Preloader yoksa)
+  if (isLoaded.value) {
+    $gsap.set([heroButtonRef.value, videoContainerRef.value], {
+      autoAlpha: 1,
+      y: 0,
+    });
+  }
+});
+
+watch(isLoaded, (val) => {
+  if (val) {
+    playHeroEntrance();
+  }
 });
 
 onUnmounted(() => {
