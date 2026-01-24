@@ -32,8 +32,7 @@ import { watch, onMounted, computed, onBeforeMount } from "vue";
 const isLoaded = useState<boolean>("isLoaded", () => false);
 const { $ScrollTrigger, $ScrollSmoother } = useNuxtApp();
 
-// --- 1. NATIVE RESTORATION DISABLE ---
-// Tarayıcının kendi hafızasını kapatıyoruz ki bizim kontrolümüzle çakışmasın.
+// --- NATIVE SCROLL DISABLE ---
 onBeforeMount(() => {
   if (typeof window !== "undefined") {
     if (history.scrollRestoration) {
@@ -60,10 +59,16 @@ onMounted(() => {
       ($ScrollSmoother as any).create({
         wrapper: "#smooth-wrapper",
         content: "#smooth-content",
-        smooth: 1.0,
+        // PREMIUM AYARLAR:
+        smooth: 1.1, // 1.0 yerine 1.1 bir tık daha "ağır/lüks" hissettirir.
         effects: true,
-        smoothTouch: 0.1,
+        smoothTouch: 0.1, // Mobilde çok az yumuşatma (gecikme hissini önler)
+
+        // --- KRİTİK NOKTA: Normalize Scroll ---
+        // Bu ayar tarayıcı ile JS savaşını bitirir.
         normalizeScroll: true,
+
+        // Klavye açılınca veya adres bar değişince hesap yapmayı keser (Performans)
         ignoreMobileResize: true,
       });
 
@@ -77,9 +82,8 @@ onMounted(() => {
   }
 });
 
-// --- 2. PROFESSIONAL SCROLL RESET (Sync with Render Cycle) ---
+// --- PROFESSIONAL SCROLL RESET (Önceki Adımdaki Kod) ---
 const handleBeforeEnter = () => {
-  // A. Native Scroll'u anında sıfırla (Adres çubuğu vs. için)
   if (typeof window !== "undefined") {
     window.scrollTo(0, 0);
   }
@@ -87,12 +91,7 @@ const handleBeforeEnter = () => {
   if ($ScrollSmoother) {
     const smoother = ($ScrollSmoother as any).get();
     if (smoother) {
-      // B. Smoother'ı geçici olarak durdur (Momentum fiziğini kes)
       smoother.paused(true);
-
-      // C. RequestAnimationFrame (En Profesyonel Dokunuş)
-      // Tarayıcıya diyoruz ki: "Tam sayfayı boyamadan önceki o mikrosaniyede scroll'u 0'a eşitle."
-      // Bu, CSS silmekten çok daha stabildir çünkü tarayıcının render pipeline'ına girer.
       requestAnimationFrame(() => {
         smoother.scrollTop(0);
       });
@@ -100,17 +99,13 @@ const handleBeforeEnter = () => {
   }
 };
 
-// --- 3. RE-INIT AFTER TRANSITION ---
 const handleAfterEnter = () => {
   if ($ScrollSmoother && $ScrollTrigger) {
     const smoother = ($ScrollSmoother as any).get();
-
-    // Geçiş bitti, fiziği tekrar başlat
     if (smoother) {
-      // Bir kare daha bekleyip başlatmak, olası "layout shift" hatalarını önler.
       requestAnimationFrame(() => {
         smoother.paused(false);
-        ($ScrollTrigger as any).refresh(); // Ölçümleri al
+        ($ScrollTrigger as any).refresh();
       });
     }
   }
@@ -122,7 +117,6 @@ watch(isLoaded, (val) => {
     if (smoother) {
       smoother.paused(false);
     }
-
     setTimeout(() => {
       if ($ScrollTrigger) ($ScrollTrigger as any).refresh();
     }, 500);

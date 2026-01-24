@@ -8,12 +8,13 @@ export default defineNuxtPlugin((nuxtApp) => {
     try {
       (gsap as any).registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-      // --- PERFORMANS AYARI (STANDART) ---
-      (gsap as any).ticker.lagSmoothing(500, 33);
+      // --- PREMIUM SMOOTHNESS AYARI ---
+      // Eski ayar: (500, 33) -> Kare atlamaya (jitter) sebep olur.
+      // Yeni ayar: (0) -> Bu, "Ne olursa olsun kare atlama, akıcı kal" demektir.
+      // İşlemci çok yoğunsa animasyon çok hafif yavaşlar ama asla takılmaz/titremez.
+      (gsap as any).ticker.lagSmoothing(0);
 
-      // --- %100 GÜVENLİK AYARI (YENİ) ---
-      // Resize, Load veya DOM değişimlerinde hesaplamaları zorla.
-      // Bu, SmoothScroll ile ScrollTrigger arasındaki milimetrik senkronizasyonu korur.
+      // --- SENKRONİZASYON ---
       (ScrollTrigger as any).config({
         autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize",
       });

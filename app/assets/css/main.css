@@ -1,5 +1,3 @@
-/* assets/css/main.css */
-
 /* 1. Font Tanımları */
 @font-face {
   font-family: "TWKLausanne";
@@ -33,19 +31,19 @@ body {
   /* ScrollSmoother için KRİTİK */
   overflow: hidden !important;
 
-  /* --- DÜZELTME BURADA --- */
-  /* Rengi buraya sabitledik. Vue yüklenmese bile zemin artık bej. */
-  /* Blending mode hatası bu satırla çözülür. */
+  /* --- YENİ EKLENENLER (Scroll Kilitlenmesini Önler) --- */
+  /* Native yaylanmayı kapatır, JS kontrolünü rahatlatır */
+  overscroll-behavior: none;
+  /* Dokunmatik davranışları JS'e bırakma konusunda yardımcı olur */
+  /* NOT: normalizeScroll: true olduğu için touch-action: none vermiyoruz, GSAP halleder. */
+
   background-color: #e4e0db;
-  color: #1a1a1a; /* custom-dark karşılığı varsayılan text rengi */
+  color: #1a1a1a;
 
   min-height: 100vh;
   min-height: 100dvh;
 
-  /* Varsayılan Font Ağırlığı */
   font-weight: 250;
-
-  /* Font Render İyileştirmeleri */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -69,6 +67,7 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
 
+  /* GPU Zorlaması */
   transform: translate3d(0, 0, 0);
   will-change: transform;
   backface-visibility: hidden;
@@ -102,7 +101,7 @@ video {
   opacity: 0;
 }
 
-/* 6. TEXT REVEAL DESCENDER FIX (GLOBAL) */
+/* 6. TEXT REVEAL DESCENDER FIX */
 .line-inner {
   padding-bottom: 0.2em !important;
   margin-bottom: -0.2em !important;
