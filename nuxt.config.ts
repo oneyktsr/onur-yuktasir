@@ -5,6 +5,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "app",
 
+  // --- KRİTİK: GSAP Build Ayarı ---
+  // 500 hatalarını önler.
+  build: {
+    transpile: ["gsap"],
+  },
+
   plugins: ["~/plugins/gsap.client.ts"],
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/seo", "@nuxt/content"],
 
@@ -18,7 +24,6 @@ export default defineNuxtConfig({
 
   app: {
     pageTransition: { name: "page", mode: "out-in" },
-
     head: {
       meta: [
         {
@@ -26,13 +31,7 @@ export default defineNuxtConfig({
           content:
             "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
         },
-
-        // --- EDGE TO EDGE ÇÖZÜMÜ ---
-        // Üst barı sitenin rengine (#e4e0db) boyuyoruz.
-        // Bu sayede "kesik" görüntü gidiyor, siteyle birleşiyor.
         { name: "theme-color", content: "#e4e0db" },
-
-        // iOS Web App ayarları
         { name: "apple-mobile-web-app-capable", content: "yes" },
         {
           name: "apple-mobile-web-app-status-bar-style",
