@@ -12,7 +12,7 @@ const props = defineProps({
   duration: { type: Number, default: 1.0 },
   stagger: { type: Number, default: 0.1 },
   delay: { type: Number, default: 0 },
-  type: { type: String, default: "lines, words" }, // Varsayılan tip
+  type: { type: String, default: "lines, words" },
 });
 
 const textElement = ref<HTMLElement | null>(null);
@@ -24,53 +24,53 @@ const isLoaded = useState("isLoaded");
 const runAnimation = () => {
   if (!textElement.value) return;
 
-  // Başlangıç gizliliğini kaldır
   textElement.value.classList.remove("invisible");
 
-  if (!$SplitText) {
-    console.warn("SplitText yüklenemedi, animasyon atlandı.");
-    return;
-  }
+  if (!$SplitText) return;
 
   try {
     splitInstance = new $SplitText(textElement.value, {
       type: props.type,
-      linesClass: "line-wrapper", // Maske görevi görecek
+      linesClass: "line-wrapper",
       wordsClass: "word-content",
       autoSplit: true,
 
       onSplit: (self: any) => {
-        // Eğer 'lines' kullanıyorsak Mask Reveal Efektini kurgula
+        // --- Lines (Satır) Animasyonu ---
         if (props.type === "lines" || props.type.includes("lines")) {
-          // 1. Her satırın içeriğini bir wrapper içine al
           self.lines.forEach((line: HTMLElement) => {
             const content = line.innerHTML;
-            // İçeriği saran ve hareket edecek olan div
-            line.innerHTML = `<div class="line-inner will-change-transform" style="display: block;">${content}</div>`;
-            // Satırın kendisi maske olur
+            // line-inner temiz bir div olarak kaldı
+            line.innerHTML = `<div class="line-inner">${content}</div>`;
             line.style.overflow = "hidden";
           });
 
-          // 2. Animasyonu oluşturulan 'line-inner' elementlerine uygula
           const targets = self.lines.map((line: HTMLElement) =>
             line.querySelector(".line-inner"),
           );
 
           return $gsap.from(targets, {
             duration: props.duration,
-            yPercent: 100, // İçerik %100 aşağıdan gelir
+            yPercent: 100, // %100 aşağıdan gelir
+            rotation: 3, // Referans kodda hafif bir rotasyon var (text-line), şıklık katar
             stagger: props.stagger,
             ease: "power4.out",
             delay: props.delay,
+
+            // ScrollTrigger ayarları
             scrollTrigger: {
               trigger: textElement.value,
               start: "top 90%",
               toggleActions: "play none none none",
             },
+
+            // Animasyon bitince GPU yükünü boşalt
+            onComplete: () => {
+              $gsap.set(targets, { clearProps: "transform,willChange" });
+            },
           });
         }
-
-        // Eğer lines yoksa normal (kelime/harf) animasyon (Fallback)
+        // --- Words (Kelime) Fallback ---
         else {
           return $gsap.from(self.words || self.chars, {
             duration: props.duration,
@@ -91,7 +91,7 @@ const runAnimation = () => {
 
     if ($ScrollTrigger) $ScrollTrigger.refresh();
   } catch (err) {
-    console.error("TextReveal Animation Error:", err);
+    console.error("TextReveal Error:", err);
     textElement.value.classList.remove("invisible");
   }
 };
@@ -121,16 +121,6 @@ onUnmounted(() => {
   visibility: hidden;
 }
 
-/* Maske Ayarları */
-:deep(.line-wrapper) {
-  /* Satırın kendisi maskedir, taşan içeriği gizler */
-  overflow: hidden !important;
-  padding-bottom: 0.1em; /* Descender (g, y kuyrukları) payı */
-  display: block;
-}
-
-:deep(.line-inner) {
-  /* Hareket eden parça */
-  transform-origin: top left;
-}
+/* Stil işlemleri main.css üzerinden yönetiliyor (line-wrapper, line-inner) */
+/* Burası temiz kalabilir */
 </style>

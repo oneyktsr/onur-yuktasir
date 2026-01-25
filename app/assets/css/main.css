@@ -1,6 +1,6 @@
 /* assets/css/main.css */
 
-/* 1. Font Tanımları */
+/* 1. Font Tanımları - AYNEN KALIYOR */
 @font-face {
   font-family: "TWKLausanne";
   src: url("~/assets/fonts/TWKLausanne-200.woff2") format("woff2");
@@ -22,51 +22,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 3. STRICT LAYOUT RESET */
-html,
-body {
+/* 3. STRICT LAYOUT RESET (DÜZELTİLDİ) */
+html {
   width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0 !important;
-
-  /* ScrollSmoother için KRİTİK */
-  overflow: hidden !important;
-
-  background-color: #e4e0db;
-  min-height: 100vh;
-  min-height: 100dvh;
-
-  /* Varsayılan Font Ağırlığı */
-  font-weight: 250;
-
-  /* Font Render İyileştirmeleri (Mac/Windows farkını azaltır) */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  /* Fixed KALDIRILDI - ScrollSmoother'ın çalışması için gerekli */
+  /* position: fixed; */
+  overflow: hidden !important; /* Native scrollbar gizlenir */
 }
 
-/* 4. GSAP WRAPPER */
+body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0 !important;
+  background-color: #e4e0db;
+  color: #0d0e13;
+
+  /* Font Render Ayarları */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  overscroll-behavior: none;
+}
+
+/* 4. GSAP SCROLL SMOOTHER YAPISI */
 #smooth-wrapper {
+  /* Wrapper fixed olabilir, bu doğru */
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
   z-index: 1;
   overflow: hidden;
-  margin: 0 !important;
-  padding: 0 !important;
 }
 
 #smooth-content {
-  width: 100vw !important;
-  min-height: 100vh;
-  box-sizing: border-box;
-
+  width: 100%;
+  /* İçerik yüksekliği JS ile yönetilir */
   transform: translate3d(0, 0, 0);
   will-change: transform;
   backface-visibility: hidden;
+}
+
+/* GPU Hızlandırma - Performans için */
+section,
+header,
+footer {
+  will-change: transform;
 }
 
 img,
@@ -74,6 +77,10 @@ video {
   max-width: 100%;
   height: auto;
   display: block;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* 5. Sayfa Geçişleri */
@@ -86,23 +93,19 @@ video {
   opacity: 0;
 }
 
-/* 6. TEXT REVEAL DESCENDER FIX (GLOBAL) */
-/* Bu kod, UITextReveal bileşenindeki GSAP SplitText tarafından
-   oluşturulan satırların (line-inner) altına görünmez bir pay bırakır.
-   Böylece g, y, j, p harflerinin kuyrukları maske (overflow:hidden)
-   tarafından kesilmez. Negatif margin ile satır tekrar yerine oturtulur.
-*/
+/* 6. TEXT REVEAL OPTIMIZATION */
 .line-wrapper {
   overflow: hidden !important;
-  padding-bottom: 0.14em !important; /* Sadece kuyruk ucu kadar pay */
-  margin-bottom: -0.14em !important; /* Satırları tekrar sıkılaştır */
   display: block;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
   width: 100%;
 }
 
 .line-inner {
   display: block;
   will-change: transform;
-  /* Inner padding'e gerek kalmadı, wrapper kontrol ediyor */
+  transform-origin: top left;
   padding: 0 !important;
+  margin: 0 !important;
 }

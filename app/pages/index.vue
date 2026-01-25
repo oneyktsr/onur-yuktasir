@@ -314,10 +314,11 @@ const heroSectionRef = ref<HTMLElement | null>(null);
 const heroTitleRef = ref<HTMLElement | null>(null);
 const videoContainerRef = ref<HTMLElement | null>(null);
 const videoRef = ref<HTMLElement | null>(null);
-
 const marqueeInnerRef = ref<HTMLElement | null>(null);
 
 let ctx: any;
+// Ticker'ı temizlemek için değişkene atıyoruz
+let marqueeTicker: ((time: number, deltaTime: number) => void) | null = null;
 
 onMounted(async () => {
   if (!$gsap || !$ScrollTrigger) return;
@@ -373,20 +374,31 @@ onMounted(async () => {
           );
         }
 
-        // --- SIMPLE MARQUEE LOGIC ---
+        // --- OPTIMIZED MARQUEE LOGIC ---
+        // Context içinde ama Ticker globaldir, manuel temizlik gerekir.
         if (marqueeInnerRef.value) {
           let xPercent = 0;
           const speed = -0.002;
 
-          $gsap.ticker.add((time: number, deltaTime: number) => {
-            xPercent += speed * deltaTime * 0.8;
+          // Fonksiyonu değişkene ata
+          marqueeTicker = (time: number, deltaTime: number) => {
+            // Delta time çok büyükse (sekme değişimi vs) zıplamayı önle
+            const delta = deltaTime > 100 ? 16 : deltaTime;
+
+            xPercent += speed * delta * 0.8;
 
             if (xPercent <= -33.333) {
               xPercent = 0;
             }
 
-            $gsap.set(marqueeInnerRef.value, { xPercent: xPercent });
-          });
+            // Doğrudan stil ataması (gsap.set'ten daha hafif olabilir)
+            if (marqueeInnerRef.value) {
+              $gsap.set(marqueeInnerRef.value, { xPercent: xPercent });
+            }
+          };
+
+          // Ticker'ı başlat
+          $gsap.ticker.add(marqueeTicker);
         }
       },
     );
@@ -397,5 +409,11 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (ctx) ctx.revert();
+
+  // Ticker'ı mutlaka temizle (Memory Leak Önlemi)
+  if (marqueeTicker) {
+    $gsap.ticker.remove(marqueeTicker);
+    marqueeTicker = null;
+  }
 });
 </script>

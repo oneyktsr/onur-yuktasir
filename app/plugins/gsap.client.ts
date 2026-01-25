@@ -6,16 +6,26 @@ import { SplitText } from "~/assets/gsap/SplitText.js";
 export default defineNuxtPlugin((nuxtApp) => {
   if (import.meta.client) {
     try {
+      // Register işlemleri
       (gsap as any).registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-      // --- PERFORMANS AYARI (STANDART) ---
+      // --- PERFORMANS AYARI ---
       (gsap as any).ticker.lagSmoothing(500, 33);
 
-      // --- %100 GÜVENLİK AYARI (YENİ) ---
-      // Resize, Load veya DOM değişimlerinde hesaplamaları zorla.
-      // Bu, SmoothScroll ile ScrollTrigger arasındaki milimetrik senkronizasyonu korur.
+      // --- JITTER / TİTREME ÖNLEYİCİ ---
+      // 'ScrollTrigger as any' kullanılarak TS hatası giderildi.
+      (ScrollTrigger as any).normalizeScroll({
+        allowNestedScroll: true,
+        lockAxis: false,
+        // 'self' parametresine 'any' tipi verildi.
+        momentum: (self: any) => Math.min(3, self.velocityY / 1000),
+        type: "touch,wheel,pointer",
+      });
+
+      // --- CONFIG AYARLARI ---
       (ScrollTrigger as any).config({
         autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize",
+        ignoreMobileResize: true,
       });
     } catch (e) {
       console.warn("GSAP Register Error:", e);
